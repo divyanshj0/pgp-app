@@ -8,6 +8,11 @@
     "scheme": "practiseapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/coffee-splash.png",
+      "backgroundColor": "#000000",
+      "resizeMode": "cover"
+    },
     "ios": {
       "supportsTablet": true
     },
