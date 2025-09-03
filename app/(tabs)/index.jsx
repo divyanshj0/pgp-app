@@ -1,5 +1,5 @@
 import { View, Text ,StyleSheet,ImageBackground} from 'react-native'
-import icedCoffeImg from "@/assets/images/iced-coffee.png"
+import icedCoffeImg from "../../assets/images/iced-coffee.png"
 import React from 'react'
 const app = () => {
   return (
