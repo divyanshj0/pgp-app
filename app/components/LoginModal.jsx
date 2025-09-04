@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-
+import axios from 'axios';
 const LoginModal = ({ toggleView }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        // Implement manual login logic here
-        Alert.alert('Login', `Attempting to log in with email: ${email}`);
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/login', {
+                email,
+                password,
+            });
+            Alert.alert('Login Successful', response.data.message);
+        } catch (error) {
+            if (error.response) {
+                Alert.alert('Login Failed', error.response.data.message);
+            } else {
+                Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+            }
+        }
     };
 
     const handleGoogleLogin = () => {
@@ -67,7 +78,7 @@ const LoginModal = ({ toggleView }) => {
                 <Text style={styles.googleButtonText}>Continue with Google</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.signUpButton} onPress={ toggleView }>
+            <TouchableOpacity style={styles.signUpButton} onPress={toggleView}>
                 <Text style={styles.signUpText}>Don't have an account? Sign Up</Text>
             </TouchableOpacity>
         </View>

@@ -1,39 +1,77 @@
-import { View, Text ,StyleSheet,ImageBackground} from 'react-native'
-import icedCoffeImg from "../../assets/images/iced-coffee.png"
-import React from 'react'
-const app = () => {
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ImageBackground, 
+  KeyboardAvoidingView, 
+  ScrollView, 
+  Platform 
+} from 'react-native';
+import LoginModal from '../components/LoginModal';
+import SignUpModal from '../components/SignUpModal';
+
+const  app= () => {
+  const [isLoginView, setIsLoginView] = useState(true);
+
+  const toggleView = () => {
+    setIsLoginView(!isLoginView);
+  };
+
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={icedCoffeImg}
-        resizeMode='cover'
-        style={styles.image}
+    <ImageBackground
+      source={require('../../assets/images/coffee-splash.png')}
+      style={styles.background}
+    >
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingContainer}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <Text style={styles.text}>index</Text>
-      </ImageBackground>
-    </View>
-  )
-}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="never"
+        >
+          <Text style={styles.appName}>Doctor's Appointment</Text>
+          <Text style={styles.tagline}>Book your consultation with ease.</Text>
 
-export default app
+          {isLoginView ? (
+            <LoginModal toggleView={toggleView} />
+          ) : (
+            <SignUpModal toggleView={toggleView} />
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
+  );
+};
 
-const styles=StyleSheet.create({
-  container:{
-    flex:1,
-    flexDirection:'column'
-
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
   },
-  image:{
-    width:"100%",
-    height:"100%",
-    flex:1,
-    justifyContent:"center",
-    alignItems:"center"
+  keyboardAvoidingContainer: {
+    flex: 1,
   },
-  text:{
-    color:'white',
-    fontSize:36,
-    fontWeight:'bold',
-    textAlign:'center'
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-start', // start from top
+    padding: 20,
+  },
+  appName: {
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: 'white',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
+    marginBottom: 10,
+  },
+  tagline: {
+    fontSize: 18,
+    color: 'white',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+    marginBottom: 30,
   }
-})
+});
+
+export default app;
