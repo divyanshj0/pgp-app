@@ -22,6 +22,18 @@ mongoose.connect(mongoUri)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
 
+const appointmentSchema = new mongoose.Schema({
+  patientName: { type: String, required: true },
+  gender: { type: String, required: true },
+  age: { type: Number, required: true },
+  mobileNumber: { type: String, required: true },
+  reason: { type: String, required: true },
+  date: { type: Date, required: true },
+  timeSlot: { type: String, required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+});
+
+const Appointment = mongoose.model('Appointment', appointmentSchema);
 // User Schema
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
@@ -29,6 +41,16 @@ const userSchema = new mongoose.Schema({
   mobileNumber: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  familyMembers: [{
+    firstName: String,
+    lastName: String,
+    gender: String,
+    age: Number,
+  }],
+  appointments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Appointment'
+  }]
 });
 
 // Hash password before saving

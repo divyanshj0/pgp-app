@@ -1,17 +1,9 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ImageBackground, 
-  KeyboardAvoidingView, 
-  ScrollView, 
-  Platform 
-} from 'react-native';
+import { useState } from 'react';
+import { ImageBackground, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 'react-native';
 import LoginModal from '../components/LoginModal';
 import SignUpModal from '../components/SignUpModal';
 
-const HomeScreen = () => {
+const App = () => {
   const [isLoginView, setIsLoginView] = useState(true);
 
   const toggleView = () => {
@@ -20,7 +12,7 @@ const HomeScreen = () => {
 
   return (
     <ImageBackground
-      source={require('../../assets/images/coffee-splash.png')}
+      source={require('../assets/images/coffee-splash.png')}
       style={styles.background}
     >
       <KeyboardAvoidingView
@@ -54,7 +46,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'flex-start', // start from top
+    justifyContent: 'flex-start',
     padding: 20,
   },
   appName: {
@@ -74,4 +66,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeScreen;
+export default App;

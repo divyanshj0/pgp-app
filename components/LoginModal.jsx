@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
+import {useRouter} from 'expo-router'
 const LoginModal = ({ toggleView }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/login', {
+            const response = await axios.post('http://192.168.0.104:5000/api/login', {
                 email,
                 password,
             });
-            Alert.alert('Login Successful', response.data.message);
+            router.replace('/(tabs)');
         } catch (error) {
             if (error.response) {
                 Alert.alert('Login Failed', error.response.data.message);
