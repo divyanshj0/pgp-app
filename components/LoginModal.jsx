@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import {useRouter} from 'expo-router'
+import { useRouter } from 'expo-router'
 const LoginModal = ({ toggleView }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
+    const navigation = useNavigation();
 
     const handleLogin = async () => {
         try {
@@ -13,7 +15,7 @@ const LoginModal = ({ toggleView }) => {
                 email,
                 password,
             });
-            router.replace('/(tabs)');
+            navigation.replace('MainTabs');
         } catch (error) {
             if (error.response) {
                 Alert.alert('Login Failed', error.response.data.message);
@@ -22,7 +24,6 @@ const LoginModal = ({ toggleView }) => {
             }
         }
     };
-
     const handleGoogleLogin = () => {
         // Implement Google sign-in logic here
         Alert.alert('Google Sign-in', 'Continuing with Google...');

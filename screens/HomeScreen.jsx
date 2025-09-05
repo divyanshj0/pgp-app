@@ -1,9 +1,16 @@
 import { useState } from 'react';
-import { ImageBackground, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text } from 'react-native';
+import {
+    ImageBackground,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text
+} from 'react-native';
 import LoginModal from '../components/LoginModal';
 import SignUpModal from '../components/SignUpModal';
 
-const App = () => {
+const HomeScreen = () => {
   const [isLoginView, setIsLoginView] = useState(true);
 
   const toggleView = () => {
@@ -66,4 +73,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
+export default HomeScreen;

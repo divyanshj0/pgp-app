@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert } from 'react-native';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const API_URL = 'http://172.22.66.125:8081/api'; // Make sure to replace YOUR_LOCAL_IP
+// Replace YOUR_LOCAL_IP with your actual local IP address
+const API_URL = 'http://192.168.0.104:5000/api';
 
 const AppointmentItem = ({ appointment }) => (
   <View style={styles.appointmentItem}>

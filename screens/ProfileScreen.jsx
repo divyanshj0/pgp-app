@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  Alert, 
-  ActivityIndicator,
-  TextInput,
-  TouchableOpacity
-} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import {
+    ActivityIndicator,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 
-const API_URL = 'httP://172.22.66.125:8081/api'; // Make sure to replace YOUR_LOCAL_IP
+const API_URL = 'http://192.168.0.104:5000/api';
 
 const ProfileScreen = () => {
   const [user, setUser] = useState(null);
@@ -67,7 +68,7 @@ const ProfileScreen = () => {
         <ActivityIndicator size="large" color="#0a7ea4" />
       </View>
     );
-    }
+  }
 
   return (
     <ScrollView style={styles.container}>

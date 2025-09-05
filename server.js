@@ -103,5 +103,108 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ message: 'Server error during login.' });
   }
 });
+// Middleware to simulate user authentication for demonstration purposes
+// In a real application, you would use a JWT or session-based authentication
+// to get the user ID from a token.
+app.use((req, res, next) => {
+  // Assuming a user is "logged in" with a static user ID for this example
+  // You would replace this with real authentication logic
+  req.userId = 'your_hardcoded_user_id'; // Replace with a valid ObjectId from your database
+  next();
+});
 
+// Route to fetch all appointments for a user
+app.get('/api/appointments', async (req, res) => {
+  try {
+    // In a real app, you'd get the user ID from the authenticated request
+    const userId = req.userId;
+    
+    // Find all appointments associated with the user and populate the user details
+    const appointments = await Appointment.find({ user: userId });
+    
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error while fetching appointments.' });
+  }
+});
+
+// Route to book a new appointment
+app.post('/api/appointments', async (req, res) => {
+  try {
+    const userId = req.userId; // Get user ID from the (simulated) authenticated request
+    const { name, gender, age, mobileNumber, reason, date, timeSlot } = req.body;
+    
+    const newAppointment = new Appointment({
+      patientName: name,
+      gender,
+      age,
+      mobileNumber,
+      reason,
+      date,
+      timeSlot,
+      user: userId,
+    });
+    
+    await newAppointment.save();
+    
+    // Add the new appointment's ID to the user's appointments array
+    const user = await User.findById(userId);
+    if (user) {
+      user.appointments.push(newAppointment._id);
+      await user.save();
+    }
+
+    res.status(201).json({ message: 'Appointment booked successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error during appointment booking.' });
+  }
+});
+
+// Route to fetch a user's profile information
+app.get('/api/profile', async (req, res) => {
+  try {
+    const userId = req.userId;
+    // Find the user by their ID and select all fields except the password
+    const user = await User.findById(userId).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error while fetching profile.' });
+  }
+});
+
+// Route to add a new family member to the user's profile
+app.post('/api/profile/family-members', async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { name, age, gender } = req.body;
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    
+    const newFamilyMember = {
+      firstName: name.split(' ')[0],
+      lastName: name.split(' ')[1] || '',
+      age,
+      gender,
+    };
+    
+    user.familyMembers.push(newFamilyMember);
+    await user.save();
+    
+    res.status(201).json({ message: 'Family member added successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error while adding family member.' });
+  }
+});
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
