@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import axios from 'axios'
+import axios from 'axios';
+import { useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 const SignUpModal = ({ toggleView }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -15,7 +15,7 @@ const SignUpModal = ({ toggleView }) => {
       return;
     }
     try {
-      const response = await axios.post('http://192.168.0.104:5000/api/signup', {
+      const response = await axios.post('http://192.168.0.100:5000/api/signup', {
         firstName,
         lastName,
         mobileNumber,
