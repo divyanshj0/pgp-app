@@ -1,21 +1,18 @@
-import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const LoginModal = ({ toggleView }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigation = useNavigation();
-
     const handleLogin = async () => {
         try {
             const response = await axios.post('http://192.168.0.100:5000/api/login', {
                 email,
                 password,
             });
-            // Use navigation.navigate to go to the main tabs screen
-            navigation.navigate('MainTabs');
+            router.replace('/(tabs)');
         } catch (error) {
             if (error.response) {
                 Alert.alert('Login Failed', error.response.data.message);
@@ -33,12 +30,6 @@ const LoginModal = ({ toggleView }) => {
         // Implement forgot password navigation here
         Alert.alert('Forgot Password', 'Navigating to forgot password screen...');
     };
-
-    const handleSignUp = () => {
-        // Implement sign-up navigation here
-        Alert.alert('Sign Up', 'Navigating to sign up screen...');
-    };
-
     return (
         <View style={styles.formContainer}>
             <View style={styles.inputView}>

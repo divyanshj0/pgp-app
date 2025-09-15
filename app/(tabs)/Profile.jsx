@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const API_URL = 'http://192.168.0.100:5000/api';
 
@@ -71,71 +72,72 @@ const Profile = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>User Profile</Text>
-      
-      {user && (
-        <View style={styles.profileSection}>
-          <Text style={styles.label}>Name:</Text>
-          <Text style={styles.value}>{user.firstName} {user.lastName}</Text>
-          <Text style={styles.label}>Email:</Text>
-          <Text style={styles.value}>{user.email}</Text>
-          <Text style={styles.label}>Mobile Number:</Text>
-          <Text style={styles.value}>{user.mobileNumber}</Text>
-        </View>
-      )}
-
-      <Text style={styles.sectionTitle}>Family Members</Text>
-      <View style={styles.familyMembersSection}>
-        {user?.familyMembers?.length > 0 ? (
-          user.familyMembers.map((member, index) => (
-            <View key={index} style={styles.familyMemberItem}>
-              <Text>{member.name} ({member.gender}, {member.age})</Text>
-            </View>
-          ))
-        ) : (
-          <Text style={styles.emptyText}>No family members added yet.</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>User Profile</Text>
+        
+        {user && (
+          <View style={styles.profileSection}>
+            <Text style={styles.label}>Name:</Text>
+            <Text style={styles.value}>{user.firstName} {user.lastName}</Text>
+            <Text style={styles.label}>Email:</Text>
+            <Text style={styles.value}>{user.email}</Text>
+            <Text style={styles.label}>Mobile Number:</Text>
+            <Text style={styles.value}>{user.mobileNumber}</Text>
+          </View>
         )}
-      </View>
-      
-      <Text style={styles.sectionTitle}>Add a New Family Member</Text>
-      <View style={styles.addFamilyMemberSection}>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={newFamilyMemberName}
-          onChangeText={setNewFamilyMemberName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Age"
-          keyboardType="numeric"
-          value={newFamilyMemberAge}
-          onChangeText={setNewFamilyMemberAge}
-        />
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={newFamilyMemberGender}
-            onValueChange={(itemValue) => setNewFamilyMemberGender(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Male" value="Male" />
-            <Picker.Item label="Female" value="Female" />
-            <Picker.Item label="Other" value="Other" />
-          </Picker>
+
+        <Text style={styles.sectionTitle}>Family Members</Text>
+        <View style={styles.familyMembersSection}>
+          {user?.familyMembers?.length > 0 ? (
+            user.familyMembers.map((member, index) => (
+              <View key={index} style={styles.familyMemberItem}>
+                <Text>{member.name} ({member.gender}, {member.age})</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.emptyText}>No family members added yet.</Text>
+          )}
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddFamilyMember}>
-          <Text style={styles.buttonText}>ADD FAMILY MEMBER</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        
+        <Text style={styles.sectionTitle}>Add a New Family Member</Text>
+        <View style={styles.addFamilyMemberSection}>
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            value={newFamilyMemberName}
+            onChangeText={setNewFamilyMemberName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Age"
+            keyboardType="numeric"
+            value={newFamilyMemberAge}
+            onChangeText={setNewFamilyMemberAge}
+          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={newFamilyMemberGender}
+              onValueChange={(itemValue) => setNewFamilyMemberGender(itemValue)}
+            >
+              <Picker.Item label="Male" value="Male" />
+              <Picker.Item label="Female" value="Female" />
+              <Picker.Item label="Other" value="Other" />
+            </Picker>
+          </View>
+          <TouchableOpacity style={styles.addButton} onPress={handleAddFamilyMember}>
+            <Text style={styles.buttonText}>ADD FAMILY MEMBER</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
     backgroundColor: '#f8f8f8',
   },
   loaderContainer: {
@@ -189,7 +191,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   input: {
-    height: 40,
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 8,
@@ -201,9 +202,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 10,
-  },
-  picker: {
-    height: 40,
   },
   addButton: {
     backgroundColor: '#0a7ea4',

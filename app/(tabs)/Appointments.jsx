@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 // Replace YOUR_LOCAL_IP with your actual local IP address
 const API_URL = 'http://192.168.0.100:5000/api';
 
@@ -51,36 +51,38 @@ const Appointments = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
-      {upcomingAppointments.length > 0 ? (
-        <FlatList
-          data={upcomingAppointments}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => <AppointmentItem appointment={item} />}
-        />
-      ) : (
-        <Text style={styles.emptyText}>No upcoming appointments.</Text>
-      )}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+        {upcomingAppointments.length > 0 ? (
+          <FlatList
+            data={upcomingAppointments}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => <AppointmentItem appointment={item} />}
+          />
+        ) : (
+          <Text style={styles.emptyText}>No upcoming appointments.</Text>
+        )}
 
-      <Text style={styles.sectionTitle}>Past Appointments</Text>
-      {pastAppointments.length > 0 ? (
-        <FlatList
-          data={pastAppointments}
-          keyExtractor={(item) => item._id.toString()}
-          renderItem={({ item }) => <AppointmentItem appointment={item} />}
-        />
-      ) : (
-        <Text style={styles.emptyText}>No past appointments.</Text>
-      )}
-    </ScrollView>
+        <Text style={styles.sectionTitle}>Past Appointments</Text>
+        {pastAppointments.length > 0 ? (
+          <FlatList
+            data={pastAppointments}
+            keyExtractor={(item) => item._id.toString()}
+            renderItem={({ item }) => <AppointmentItem appointment={item} />}
+          />
+        ) : (
+          <Text style={styles.emptyText}>No past appointments.</Text>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
     backgroundColor: '#f8f8f8',
   },
   loaderContainer: {

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginModal from '../components/LoginModal';
 import SignUpModal from '../components/SignUpModal';
 
@@ -16,31 +17,33 @@ const Index = () => {
   const toggleView = () => {
     setIsLoginView(!isLoginView);
   };
-
+ 
   return (
-    <ImageBackground
-      source={require('../assets/images/coffee-splash.png')}
-      style={styles.background}
-    >
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoidingContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ImageBackground
+        source={require('../assets/images/coffee-splash.png')}
+        style={styles.background}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="never"
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <Text style={styles.appName}>Doctor's Appointment</Text>
-          <Text style={styles.tagline}>Book your consultation with ease.</Text>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="never"
+          >
+            <Text style={styles.appName}>Doctor's Appointment</Text>
+            <Text style={styles.tagline}>Book your consultation with ease.</Text>
 
-          {isLoginView ? (
-            <LoginModal toggleView={toggleView} />
-          ) : (
-            <SignUpModal toggleView={toggleView} />
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </ImageBackground>
+            {isLoginView ? (
+              <LoginModal toggleView={toggleView} />
+            ) : (
+              <SignUpModal toggleView={toggleView} />
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
@@ -54,7 +57,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'flex-start',
-    padding: 20,
+    paddingHorizontal:20,
   },
   appName: {
     fontSize: 42,
