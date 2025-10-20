@@ -1,16 +1,18 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import {
   ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
+  Avatar,
+  Button,
+  Card,
+  Dialog,
+  Portal,
   Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
+  TextInput
+} from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const API_URL = 'http://192.168.0.100:5000/api';
@@ -18,9 +20,11 @@ const API_URL = 'http://192.168.0.100:5000/api';
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [newFamilyMemberName, setNewFamilyMemberName] = useState('');
+  const [newFamilyMemberFirstName, setNewFamilyMemberFirstName] = useState('');
+  const [newFamilyMemberLastName, setNewFamilyMemberLastName] = useState('');
   const [newFamilyMemberAge, setNewFamilyMemberAge] = useState('');
   const [newFamilyMemberGender, setNewFamilyMemberGender] = useState('Male');
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -28,117 +32,178 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`${API_URL}/profile`);
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setUser(response.data);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to fetch profile data.');
+      alert('Failed to fetch profile data.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleAddFamilyMember = async () => {
-    if (!newFamilyMemberName || !newFamilyMemberAge) {
-      Alert.alert('Error', 'Please fill in all family member details.');
+    if (!newFamilyMemberFirstName || !newFamilyMemberAge) {
+      alert('Please fill in all family member details.');
       return;
     }
-    
+
+    const token = await AsyncStorage.getItem('token');
     try {
-      const response = await axios.post(`${API_URL}/profile/family-members`, {
-        name: newFamilyMemberName,
-        age: parseInt(newFamilyMemberAge, 10),
-        gender: newFamilyMemberGender,
-      });
-      Alert.alert('Success', response.data.message);
-      // Refresh user data to show the new family member
+      const response = await axios.post(
+        `${API_URL}/profile/family-members`,
+        {
+          firstName: newFamilyMemberFirstName,
+          lastName: newFamilyMemberLastName,
+          age: parseInt(newFamilyMemberAge, 10),
+          gender: newFamilyMemberGender,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchProfile();
-      // Clear form
-      setNewFamilyMemberName('');
+      setDialogVisible(false);
+      setNewFamilyMemberFirstName('');
+      setNewFamilyMemberLastName('');
       setNewFamilyMemberAge('');
       setNewFamilyMemberGender('Male');
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', error.response?.data?.message || 'Failed to add family member.');
+      alert('Failed to add family member.');
+    }
+  };
+  const getGenderIcon = (gender) => {
+    switch (gender) {
+      case 'Male':
+        return <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#42a5f5' }} />;
+      case 'Female':
+        return <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#ec407a' }} />;
+      default:
+        return <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#ab47bc' }} />;
     }
   };
 
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0a7ea4" />
+        <ActivityIndicator animating={true} size="large" color="#0a7ea4" />
       </View>
     );
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.title}>User Profile</Text>
-        
-        {user && (
-          <View style={styles.profileSection}>
-            <Text style={styles.label}>Name:</Text>
-            <Text style={styles.value}>{user.firstName} {user.lastName}</Text>
-            <Text style={styles.label}>Email:</Text>
-            <Text style={styles.value}>{user.email}</Text>
-            <Text style={styles.label}>Mobile Number:</Text>
-            <Text style={styles.value}>{user.mobileNumber}</Text>
-          </View>
-        )}
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text variant="headlineMedium" style={styles.title}>
+          Profile
+        </Text>
 
-        <Text style={styles.sectionTitle}>Family Members</Text>
-        <View style={styles.familyMembersSection}>
-          {user?.familyMembers?.length > 0 ? (
-            user.familyMembers.map((member, index) => (
-              <View key={index} style={styles.familyMemberItem}>
-                <Text>{member.name} ({member.gender}, {member.age})</Text>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.emptyText}>No family members added yet.</Text>
-          )}
+        <Text variant="titleLarge" style={styles.sectionTitle}>
+          Personal Details
+        </Text>
+        <Card style={styles.card}>
+          <Card.Title title={`${user.firstName} ${user.lastName}`} />
+          <Card.Content>
+            <Text>Email: {user.email}</Text>
+            <Text>Mobile: {user.mobileNumber}</Text>
+          </Card.Content>
+        </Card>
+
+        <View style={styles.addfamily}>
+          <Text variant="titleLarge" style={styles.sectionTitle}>
+            Family Members
+          </Text>
+          <Button
+            icon="account-plus"
+            mode="contained"
+            style={styles.addButton}
+            onPress={() => setDialogVisible(true)}
+          >
+            Add Member
+          </Button>
         </View>
-        
-        <Text style={styles.sectionTitle}>Add a New Family Member</Text>
-        <View style={styles.addFamilyMemberSection}>
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            value={newFamilyMemberName}
-            onChangeText={setNewFamilyMemberName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Age"
-            keyboardType="numeric"
-            value={newFamilyMemberAge}
-            onChangeText={setNewFamilyMemberAge}
-          />
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={newFamilyMemberGender}
-              onValueChange={(itemValue) => setNewFamilyMemberGender(itemValue)}
-            >
-              <Picker.Item label="Male" value="Male" />
-              <Picker.Item label="Female" value="Female" />
-              <Picker.Item label="Other" value="Other" />
-            </Picker>
-          </View>
-          <TouchableOpacity style={styles.addButton} onPress={handleAddFamilyMember}>
-            <Text style={styles.buttonText}>ADD FAMILY MEMBER</Text>
-          </TouchableOpacity>
-        </View>
+        <Card style={styles.card}>
+          <Card.Content>
+            {user?.familyMembers?.length > 0 ? (
+              user.familyMembers.map((member, index) => (
+                <View key={index} style={styles.familyMemberRow}>
+                  {getGenderIcon(member.gender)}
+                  <View style={{ marginLeft: 12, flex: 1 }}>
+                    <Text style={styles.memberName}>
+                      {member.firstName + ' ' + member.lastName}
+                    </Text>
+                    <Text style={styles.memberInfo}>
+                      {member.gender}
+                    </Text>
+                    <Text style={styles.memberInfo}>
+                     {member.age} yrs
+                    </Text>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.emptyText}>No family members added yet.</Text>
+            )}
+          </Card.Content>
+        </Card>
+
+
       </ScrollView>
+
+      {/* Dialog for adding family member */}
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Add New Family Member</Dialog.Title>
+          <Dialog.Content>
+            <TextInput
+              label="First Name"
+              mode="outlined"
+              value={newFamilyMemberFirstName}
+              onChangeText={setNewFamilyMemberFirstName}
+              style={styles.input}
+            />
+            <TextInput
+              label="Last Name"
+              mode="outlined"
+              value={newFamilyMemberLastName}
+              onChangeText={setNewFamilyMemberLastName}
+              style={styles.input}
+            />
+            <TextInput
+              label="Age"
+              mode="outlined"
+              keyboardType="numeric"
+              value={newFamilyMemberAge}
+              onChangeText={setNewFamilyMemberAge}
+              style={styles.input}
+            />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={newFamilyMemberGender}
+                onValueChange={(val) => setNewFamilyMemberGender(val)}
+              >
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+                <Picker.Item label="Other" value="Other" />
+              </Picker>
+            </View>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
+            <Button onPress={handleAddFamilyMember}>Save</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    backgroundColor: '#f8f8f8',
+    padding: 20,
+    backgroundColor: '#f2f5f9',
   },
   loaderContainer: {
     flex: 1,
@@ -146,77 +211,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    marginBottom: 16,
     fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  profileSection: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
-  },
-  label: {
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  value: {
-    fontSize: 16,
-    marginBottom: 5,
+    textAlign: 'center',
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
     marginTop: 20,
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
-  familyMembersSection: {
+  card: {
+    borderRadius: 12,
+    marginBottom: 16,
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
+    elevation: 3,
   },
-  familyMemberItem: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  addfamily:{
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-between',
+    marginBottom:10,
   },
-  addFamilyMemberSection: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
+  familyMemberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  memberName: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  memberInfo: {
+    fontSize: 14,
+    color: '#666',
   },
   input: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   pickerContainer: {
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   addButton: {
-    backgroundColor: '#0a7ea4',
-    padding: 10,
-    borderRadius: 25,
-    alignItems: 'center',
     marginTop: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    borderRadius: 25,
   },
   emptyText: {
     fontStyle: 'italic',
     color: '#555',
+    textAlign: 'center',
   },
 });
 

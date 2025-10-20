@@ -1,17 +1,42 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView,StyleSheet, View,} from 'react-native';
+import { Avatar,Card,Divider,List, Text,} from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// Replace YOUR_LOCAL_IP with your actual local IP address
+// Replace with your local IP
 const API_URL = 'http://192.168.0.100:5000/api';
 
-const AppointmentItem = ({ appointment }) => (
-  <View style={styles.appointmentItem}>
-    <Text style={styles.itemTitle}>{appointment.reason}</Text>
-    <Text>Date: {new Date(appointment.date).toDateString()}</Text>
-    <Text>Time: {appointment.timeSlot}</Text>
-    <Text>Patient: {appointment.patientName}</Text>
-  </View>
+const AppointmentItem = ({ appointment, isUpcoming }) => (
+  <Card style={[styles.appointmentCard, isUpcoming && styles.upcomingCard]}>
+    <Card.Title
+      title={appointment.reason}
+      titleStyle={styles.itemTitle}
+      left={(props) => (
+        <Avatar.Icon
+          {...props}
+          icon={isUpcoming ? 'calendar-clock' : 'history'}
+          style={{ backgroundColor: isUpcoming ? '#42a5f5' : '#9e9e9e' }}
+        />
+      )}
+    />
+    <Card.Content>
+      <List.Item
+        title={`Date: ${new Date(appointment.date).toDateString()}`}
+        left={(props) => <List.Icon {...props} icon="calendar" />}
+      />
+      <Divider />
+      <List.Item
+        title={`Time: ${appointment.timeSlot}`}
+        left={(props) => <List.Icon {...props} icon="clock-outline" />}
+      />
+      <Divider />
+      <List.Item
+        title={`Patient: ${appointment.patientName}`}
+        left={(props) => <List.Icon {...props} icon="account" />}
+      />
+    </Card.Content>
+  </Card>
 );
 
 const Appointments = () => {
@@ -24,7 +49,10 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`${API_URL}/appointments`);
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/appointments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setAppointments(response.data);
     } catch (error) {
       console.error(error);
@@ -52,25 +80,33 @@ const Appointments = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text variant="headlineMedium" style={styles.sectionTitle}>
+          Upcoming Appointments
+        </Text>
         {upcomingAppointments.length > 0 ? (
-          <FlatList
-            data={upcomingAppointments}
-            keyExtractor={(item) => item._id.toString()}
-            renderItem={({ item }) => <AppointmentItem appointment={item} />}
-          />
+          upcomingAppointments.map((item) => (
+            <AppointmentItem
+              key={item._id}
+              appointment={item}
+              isUpcoming={true}
+            />
+          ))
         ) : (
           <Text style={styles.emptyText}>No upcoming appointments.</Text>
         )}
 
-        <Text style={styles.sectionTitle}>Past Appointments</Text>
+        <Text variant="headlineMedium" style={styles.sectionTitle}>
+          Past Appointments
+        </Text>
         {pastAppointments.length > 0 ? (
-          <FlatList
-            data={pastAppointments}
-            keyExtractor={(item) => item._id.toString()}
-            renderItem={({ item }) => <AppointmentItem appointment={item} />}
-          />
+          pastAppointments.map((item) => (
+            <AppointmentItem
+              key={item._id}
+              appointment={item}
+              isUpcoming={false}
+            />
+          ))
         ) : (
           <Text style={styles.emptyText}>No past appointments.</Text>
         )}
@@ -81,9 +117,8 @@ const Appointments = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    backgroundColor: '#f8f8f8',
+    padding: 20,
+    backgroundColor: '#f2f5f9',
   },
   loaderContainer: {
     flex: 1,
@@ -91,30 +126,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 10,
+    marginVertical: 12,
   },
-  appointmentItem: {
+  appointmentCard: {
+    borderRadius: 12,
+    marginBottom: 16,
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
     elevation: 2,
   },
+  upcomingCard: {
+    borderLeftWidth: 5,
+    borderLeftColor: '#42a5f5',
+  },
   itemTitle: {
-    fontWeight: 'bold',
-    marginBottom: 5,
+    fontWeight: '600',
+    fontSize: 16,
   },
   emptyText: {
     fontStyle: 'italic',
-    color: '#555',
+    color: '#777',
     marginBottom: 20,
+    textAlign: 'center',
   },
 });
 

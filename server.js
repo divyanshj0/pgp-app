@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 require('dotenv').config({ path: '.env.local' });
-
+const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -95,26 +95,39 @@ app.post('/api/login', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials. Wrong password.' });
+      return res.status(400).json({ message: 'Invalid Username or  password.' });
     }
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // Token expires in 1 hour
+    });
 
-    res.status(200).json({ message: 'Logged in successfully!' });
+    res.status(200).json({ message: 'Logged in successfully!' ,token});
   } catch (error) {
     res.status(500).json({ message: 'Server error during login.' });
   }
 });
-// Middleware to simulate user authentication for demonstration purposes
-// In a real application, you would use a JWT or session-based authentication
-// to get the user ID from a token.
 app.use((req, res, next) => {
-  // Assuming a user is "logged in" with a static user ID for this example
-  // You would replace this with real authentication logic
   req.userId = 'your_hardcoded_user_id'; // Replace with a valid ObjectId from your database
   next();
 });
+const verifyToken = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token, authorization denied' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.id;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token is not valid' });
+  }
+};
 
 // Route to fetch all appointments for a user
-app.get('/api/appointments', async (req, res) => {
+app.get('/api/appointments',verifyToken, async (req, res) => {
   try {
     // In a real app, you'd get the user ID from the authenticated request
     const userId = req.userId;
@@ -130,7 +143,7 @@ app.get('/api/appointments', async (req, res) => {
 });
 
 // Route to book a new appointment
-app.post('/api/appointments', async (req, res) => {
+app.post('/api/appointments',verifyToken, async (req, res) => {
   try {
     const userId = req.userId; // Get user ID from the (simulated) authenticated request
     const { name, gender, age, mobileNumber, reason, date, timeSlot } = req.body;
@@ -147,7 +160,6 @@ app.post('/api/appointments', async (req, res) => {
     });
     
     await newAppointment.save();
-    
     // Add the new appointment's ID to the user's appointments array
     const user = await User.findById(userId);
     if (user) {
@@ -163,7 +175,7 @@ app.post('/api/appointments', async (req, res) => {
 });
 
 // Route to fetch a user's profile information
-app.get('/api/profile', async (req, res) => {
+app.get('/api/profile',verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
     // Find the user by their ID and select all fields except the password
@@ -181,10 +193,10 @@ app.get('/api/profile', async (req, res) => {
 });
 
 // Route to add a new family member to the user's profile
-app.post('/api/profile/family-members', async (req, res) => {
+app.post('/api/profile/family-members',verifyToken, async (req, res) => {
   try {
     const userId = req.userId;
-    const { name, age, gender } = req.body;
+    const { firstName,lastName, age, gender } = req.body;
     
     const user = await User.findById(userId);
     if (!user) {
@@ -192,8 +204,8 @@ app.post('/api/profile/family-members', async (req, res) => {
     }
     
     const newFamilyMember = {
-      firstName: name.split(' ')[0],
-      lastName: name.split(' ')[1] || '',
+      firstName:firstName,
+      lastName:lastName,
       age,
       gender,
     };

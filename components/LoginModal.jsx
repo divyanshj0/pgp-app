@@ -2,6 +2,7 @@ import axios from 'axios';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginModal = ({ toggleView }) => {
     const [email, setEmail] = useState('');
@@ -12,6 +13,8 @@ const LoginModal = ({ toggleView }) => {
                 email,
                 password,
             });
+            const { token } = response.data;
+            await AsyncStorage.setItem('token',token);
             router.replace('/(tabs)');
         } catch (error) {
             if (error.response) {
