@@ -2,25 +2,16 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 const SignUpModal = ({ toggleView }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [signUpEmail, setSignUpEmail] = useState('');
-  const [signUpPassword, setSignUpPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [phone, setphone] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSignUpFormSubmit = async () => {
-    if (signUpPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
     try {
-      const response = await axios.post('http://192.168.0.100:5000/api/signup', {
-        firstName,
-        lastName,
-        mobileNumber,
-        email: signUpEmail,
-        password: signUpPassword,
+      const response = await axios.post('http://10.56.121.186:8080/auth/signup', {
+        username,
+        phone,
+        password,
       });
       Alert.alert('Success', response.data.message);
       toggleView();
@@ -38,21 +29,11 @@ const SignUpModal = ({ toggleView }) => {
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
-          placeholder="First Name"
+          placeholder="username"
           placeholderTextColor="#999"
-          value={firstName}
-          onChangeText={setFirstName}
-          autoCapitalize="words"
-        />
-      </View>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          placeholderTextColor="#999"
-          value={lastName}
-          onChangeText={setLastName}
-          autoCapitalize="words"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
         />
       </View>
       <View style={styles.inputView}>
@@ -60,20 +41,9 @@ const SignUpModal = ({ toggleView }) => {
           style={styles.input}
           placeholder="Mobile Number"
           placeholderTextColor="#999"
-          value={mobileNumber}
-          onChangeText={setMobileNumber}
+          value={phone}
+          onChangeText={setphone}
           keyboardType="phone-pad"
-        />
-      </View>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#999"
-          value={signUpEmail}
-          onChangeText={setSignUpEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
         />
       </View>
       <View style={styles.inputView}>
@@ -82,18 +52,8 @@ const SignUpModal = ({ toggleView }) => {
           placeholder="Password"
           placeholderTextColor="#999"
           secureTextEntry
-          value={signUpPassword}
-          onChangeText={setSignUpPassword}
-        />
-      </View>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          placeholderTextColor="#999"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          value={password}
+          onChangeText={setPassword}
         />
       </View>
 

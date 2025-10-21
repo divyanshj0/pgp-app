@@ -1,6 +1,5 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -12,20 +11,18 @@ export default function TabLayout() {
     <SafeAreaProvider>
       <PaperProvider>
         <Tabs screenOptions={{ headerShown: false }}>
-          <AutocompleteDropdownContextProvider>
-            <Tabs.Screen
-              name="index"
-              options={{
-                title: 'Home',
-                tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-              }}
-            />
-          </AutocompleteDropdownContextProvider>
           <Tabs.Screen
-            name="Appointments"
+            name="index"
             options={{
-              title: 'Appointments',
-              tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
+              title: 'Home',
+              tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+            }}
+          />
+          <Tabs.Screen
+            name="OrderHistory"
+            options={{
+              title: 'Orders',
+              tabBarIcon: ({ color }) => <TabBarIcon name="history" color={color} />,
             }}
           />
           <Tabs.Screen

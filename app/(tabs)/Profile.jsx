@@ -1,89 +1,54 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import {
-  ActivityIndicator,
-  Avatar,
-  Button,
-  Card,
-  Dialog,
-  Portal,
-  Text,
-  TextInput
-} from 'react-native-paper';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { Avatar, Button, Card, Divider, List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const API_URL = 'http://192.168.0.100:5000/api';
+const API_URL = 'http://10.56.121.186:8080/api';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [newFamilyMemberFirstName, setNewFamilyMemberFirstName] = useState('');
-  const [newFamilyMemberLastName, setNewFamilyMemberLastName] = useState('');
-  const [newFamilyMemberAge, setNewFamilyMemberAge] = useState('');
-  const [newFamilyMemberGender, setNewFamilyMemberGender] = useState('Male');
-  const [dialogVisible, setDialogVisible] = useState(false);
 
   useEffect(() => {
     fetchProfile();
   }, []);
 
   const fetchProfile = async () => {
+    setLoading(true);
     try {
       const token = await AsyncStorage.getItem('token');
+      if (!token) {
+         Alert.alert('Error', 'Authentication token not found.');
+         setLoading(false);
+         // Optionally redirect to login
+         router.replace('/');
+         return;
+      }
       const response = await axios.get(`${API_URL}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(response.data);
     } catch (error) {
-      console.error(error);
-      alert('Failed to fetch profile data.');
+      console.error("Fetch Profile Error:", error.response ? error.response.data : error.message);
+      if (error.response && error.response.status === 401) {
+          Alert.alert('Session Expired', 'Please log in again.');
+          await handleLogout(); // Log out if token is invalid
+      } else {
+          Alert.alert('Error', 'Failed to fetch profile data.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddFamilyMember = async () => {
-    if (!newFamilyMemberFirstName || !newFamilyMemberAge) {
-      alert('Please fill in all family member details.');
-      return;
-    }
+  const handleLogout = async () => {
+      await AsyncStorage.removeItem('token');
+      router.replace('/'); // Redirect to the login/signup screen
+  };
 
-    const token = await AsyncStorage.getItem('token');
-    try {
-      const response = await axios.post(
-        `${API_URL}/profile/family-members`,
-        {
-          firstName: newFamilyMemberFirstName,
-          lastName: newFamilyMemberLastName,
-          age: parseInt(newFamilyMemberAge, 10),
-          gender: newFamilyMemberGender,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      fetchProfile();
-      setDialogVisible(false);
-      setNewFamilyMemberFirstName('');
-      setNewFamilyMemberLastName('');
-      setNewFamilyMemberAge('');
-      setNewFamilyMemberGender('Male');
-    } catch (error) {
-      console.error(error);
-      alert('Failed to add family member.');
-    }
-  };
-  const getGenderIcon = (gender) => {
-    switch (gender) {
-      case 'Male':
-        return <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#42a5f5' }} />;
-      case 'Female':
-        return <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#ec407a' }} />;
-      default:
-        return <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#ab47bc' }} />;
-    }
-  };
 
   if (loading) {
     return (
@@ -93,115 +58,58 @@ const Profile = () => {
     );
   }
 
+  if (!user) {
+      // Handle case where user data couldn't be fetched but not loading anymore
+      return (
+          <SafeAreaView style={styles.container}>
+              <Text style={styles.emptyText}>Could not load profile data.</Text>
+              <Button mode="contained" onPress={handleLogout}>Logout</Button>
+          </SafeAreaView>
+      );
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.profileHeader}>
+        <Avatar.Icon size={80} icon="account-circle" style={styles.avatar} />
         <Text variant="headlineMedium" style={styles.title}>
-          Profile
+          {user.username || 'User Profile'}
         </Text>
+      </View>
 
-        <Text variant="titleLarge" style={styles.sectionTitle}>
-          Personal Details
-        </Text>
-        <Card style={styles.card}>
-          <Card.Title title={`${user.firstName} ${user.lastName}`} />
-          <Card.Content>
-            <Text>Email: {user.email}</Text>
-            <Text>Mobile: {user.mobileNumber}</Text>
-          </Card.Content>
-        </Card>
+      <Card style={styles.card}>
+        <Card.Content>
+          <List.Item
+            title="Username"
+            description={user.username || 'N/A'}
+            left={(props) => <List.Icon {...props} icon="account" />}
+          />
+          <Divider />
+          <List.Item
+            title="Phone Number"
+            description={user.phone || 'N/A'}
+            left={(props) => <List.Icon {...props} icon="phone" />}
+          />
+          {/* Add other relevant details if available in user object */}
+        </Card.Content>
+      </Card>
 
-        <View style={styles.addfamily}>
-          <Text variant="titleLarge" style={styles.sectionTitle}>
-            Family Members
-          </Text>
-          <Button
-            icon="account-plus"
-            mode="contained"
-            style={styles.addButton}
-            onPress={() => setDialogVisible(true)}
-          >
-            Add Member
-          </Button>
-        </View>
-        <Card style={styles.card}>
-          <Card.Content>
-            {user?.familyMembers?.length > 0 ? (
-              user.familyMembers.map((member, index) => (
-                <View key={index} style={styles.familyMemberRow}>
-                  {getGenderIcon(member.gender)}
-                  <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={styles.memberName}>
-                      {member.firstName + ' ' + member.lastName}
-                    </Text>
-                    <Text style={styles.memberInfo}>
-                      {member.gender}
-                    </Text>
-                    <Text style={styles.memberInfo}>
-                     {member.age} yrs
-                    </Text>
-                  </View>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.emptyText}>No family members added yet.</Text>
-            )}
-          </Card.Content>
-        </Card>
+      <Button
+          mode="contained"
+          onPress={handleLogout}
+          style={styles.logoutButton}
+          icon="logout"
+        >
+          Logout
+        </Button>
 
-
-      </ScrollView>
-
-      {/* Dialog for adding family member */}
-      <Portal>
-        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
-          <Dialog.Title>Add New Family Member</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="First Name"
-              mode="outlined"
-              value={newFamilyMemberFirstName}
-              onChangeText={setNewFamilyMemberFirstName}
-              style={styles.input}
-            />
-            <TextInput
-              label="Last Name"
-              mode="outlined"
-              value={newFamilyMemberLastName}
-              onChangeText={setNewFamilyMemberLastName}
-              style={styles.input}
-            />
-            <TextInput
-              label="Age"
-              mode="outlined"
-              keyboardType="numeric"
-              value={newFamilyMemberAge}
-              onChangeText={setNewFamilyMemberAge}
-              style={styles.input}
-            />
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={newFamilyMemberGender}
-                onValueChange={(val) => setNewFamilyMemberGender(val)}
-              >
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
-                <Picker.Item label="Other" value="Other" />
-              </Picker>
-            </View>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
-            <Button onPress={handleAddFamilyMember}>Save</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1, // Use flex: 1 for SafeAreaView when it's the root
     padding: 20,
     backgroundColor: '#f2f5f9',
   },
@@ -210,58 +118,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  profileHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  avatar: {
+    marginBottom: 10,
+    backgroundColor: '#0a7ea4',
+  },
   title: {
-    marginBottom: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  sectionTitle: {
-    marginTop: 20,
-    marginBottom: 10,
-    fontWeight: 'bold',
-  },
   card: {
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 20,
     backgroundColor: '#fff',
     elevation: 3,
   },
-  addfamily:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
-    marginBottom:10,
-  },
-  familyMemberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  memberName: {
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  memberInfo: {
-    fontSize: 14,
-    color: '#666',
-  },
-  input: {
-    marginBottom: 12,
-  },
-  pickerContainer: {
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  addButton: {
-    marginTop: 10,
-    borderRadius: 25,
+  logoutButton: {
+    marginTop: 20,
+    backgroundColor: '#d9534f', // A red color for logout
   },
   emptyText: {
     fontStyle: 'italic',
     color: '#555',
     textAlign: 'center',
+    marginTop: 30,
+    marginBottom: 10,
   },
 });
 

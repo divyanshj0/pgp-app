@@ -32,8 +32,8 @@ const Index = () => {
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="never"
           >
-            <Text style={styles.appName}>Doctor's Appointment</Text>
-            <Text style={styles.tagline}>Book your consultation with ease.</Text>
+            <Text style={styles.appName}>Padmavati Garments</Text>
+            <Text style={styles.tagline}>100% garneted fast color</Text>
 
             {isLoginView ? (
               <LoginModal toggleView={toggleView} />

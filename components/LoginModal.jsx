@@ -1,16 +1,16 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginModal = ({ toggleView }) => {
-    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://192.168.0.100:5000/api/login', {
-                email,
+            const response = await axios.post('http://10.56.121.186:8080/auth/login', {
+                phone,
                 password,
             });
             const { token } = response.data;
@@ -24,10 +24,6 @@ const LoginModal = ({ toggleView }) => {
             }
         }
     };
-    const handleGoogleLogin = () => {
-        // Implement Google sign-in logic here
-        Alert.alert('Google Sign-in', 'Continuing with Google...');
-    };
 
     const handleForgotPassword = () => {
         // Implement forgot password navigation here
@@ -38,11 +34,11 @@ const LoginModal = ({ toggleView }) => {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.input}
-                    placeholder="Email"
+                    placeholder="phone"
                     placeholderTextColor="#999"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
+                    value={phone}
+                    onChangeText={setPhone}
+                    keyboardType="number-pad"
                     autoCapitalize="none"
                 />
             </View>
@@ -63,16 +59,6 @@ const LoginModal = ({ toggleView }) => {
 
             <TouchableOpacity onPress={handleForgotPassword}>
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-
-            <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
-                <View style={styles.dividerLine} />
-            </View>
-
-            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
-                <Text style={styles.googleButtonText}>Continue with Google</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.signUpButton} onPress={toggleView}>
@@ -129,39 +115,6 @@ const styles = StyleSheet.create({
         color: '#0a7ea4',
         fontSize: 12,
         marginTop: 5,
-    },
-    divider: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 20,
-        width: '100%',
-    },
-    dividerLine: {
-        flex: 1,
-        height: 1,
-        backgroundColor: '#ccc',
-    },
-    dividerText: {
-        width: 'auto',
-        textAlign: 'center',
-        color: '#999',
-        fontSize: 12,
-        marginHorizontal: 10,
-    },
-    googleButton: {
-        width: '100%',
-        backgroundColor: '#dd4b39',
-        borderRadius: 25,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        marginBottom: 10,
-    },
-    googleButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        marginLeft: 10,
     },
     signUpButton: {
         marginTop: 10,
