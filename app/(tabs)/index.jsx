@@ -1,23 +1,55 @@
-import { StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const ProductCard = ({ title }) => (
-  <Card style={styles.card}>
-    <Card.Content>
-      <Text variant="titleLarge">{title}</Text>
-      {/* Add more details or image if needed */}
-    </Card.Content>
-  </Card>
+const categories = [
+  {
+    id: "pgp555",
+    title: "PGP 555",
+    image: require("../../assets/images/coffee-icon.png"),
+  },
+  {
+    id: "pgp777",
+    title: "PGP 777",
+    image: require("../../assets/images/coffee-icon.png"),
+  },
+  {
+    id: "pgp2.25",
+    title: "PGP 2.25",
+    image: require("../../assets/images/coffee-icon.png"),
+  },
+];
+
+const ProductCard = ({ item, onPress }) => (
+  <TouchableOpacity onPress={() => onPress(item)} activeOpacity={0.8}>
+    <Card style={styles.card} mode="elevated">
+      <Card.Cover source={item.image} style={styles.image} />
+      <Card.Content style={styles.cardContent}>
+        <Text variant="titleMedium" style={styles.cardTitle}>
+          {item.title}
+        </Text>
+      </Card.Content>
+    </Card>
+  </TouchableOpacity>
 );
 
 const Home = () => {
+  const navigation = useNavigation();
+
+  const handlePress = (item) => {
+    navigation.navigate("ColorChart", { category: item });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Products</Text>
-      <ProductCard title="pgp555" />
-      <ProductCard title="pgp777" />
-      <ProductCard title="pgp2.25" />
+      <Text style={styles.header}>Our Product Range</Text>
+
+      <View style={styles.grid}>
+        {categories.map((item) => (
+          <ProductCard key={item.id} item={item} onPress={handlePress} />
+        ))}
+      </View>
     </SafeAreaView>
   );
 };
@@ -25,21 +57,37 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
-    alignItems: 'center', // Center cards horizontally
+    backgroundColor: "#f5f8fa",
+    padding: 16,
   },
   header: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    alignSelf: 'flex-start', // Align header to the left
+    fontWeight: "700",
+    marginVertical: 10,
+    color: "#1a237e",
+    textAlign: "center",
+  },
+  grid: {
+    marginTop: 10,
   },
   card: {
-    marginBottom: 20,
-    width: '90%', // Adjust card width as needed
-    borderRadius: 10,
-    elevation: 3,
+    width: "90%",
+    marginVertical: 10,
+    borderRadius: 12,
+    overflow: "hidden",
+    elevation: 4,
+    backgroundColor: "#fff",
+  },
+  image: {
+    height:150
+  },
+  cardContent: {
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  cardTitle: {
+    fontWeight: "600",
+    color: "#263238",
   },
 });
 
