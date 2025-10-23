@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Card, Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -63,13 +63,24 @@ const OrderItemCard = ({ order }) => {
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchOrders().finally(() => setRefreshing(false));
+  }, []);
+
   const fetchOrders = async () => {
-    setLoading(true);
+    // Determine if it's the initial load or a refresh
+    const isInitialLoad = orders.length === 0;
+    if (isInitialLoad) {
+      setLoading(true);
+    }
+
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token) {
@@ -92,10 +103,12 @@ const OrderHistory = () => {
 
       setOrders(response.data);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Error fetching orders:", error.response ? error.response.data : error.message);
       Alert.alert("Error", "Failed to fetch orders.");
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+      }
     }
   };
 
@@ -109,7 +122,17 @@ const OrderHistory = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#1e88e5"]}
+            tintColor={"#1e88e5"}
+          />
+        }
+      >
         <Text variant="headlineMedium" style={styles.mainTitle}>
           Order History
         </Text>

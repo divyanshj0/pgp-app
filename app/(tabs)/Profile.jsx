@@ -6,12 +6,13 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 import { Avatar, Button, List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useCart } from '../../context/CartContext';
 const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const {clearCart}=useCart();
 
   useEffect(() => {
     fetchProfile();
@@ -46,8 +47,15 @@ const Profile = () => {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('token');
-    router.replace('/'); // Redirect to the login/signup screen
+    try {
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('@user_cart');
+      clearCart();
+      router.replace('/');
+    } catch (error) {
+      console.error("Logout Error:", error);
+      Alert.alert('Logout Failed', 'An error occurred during logout.');
+    }
   };
 
 

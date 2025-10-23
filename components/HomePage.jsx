@@ -5,17 +5,17 @@ const categories = [
   {
     id: "pgp555",
     title: "PGP 555",
-    image: require("../assets/images/coffee-icon.png"),
+    image: require("../assets/images/pgp555.png"),
   },
   {
     id: "pgp777",
     title: "PGP 777",
-    image: require("../assets/images/coffee-icon.png"),
+    image: require("../assets/images/pgp555(R).png"),
   },
   {
     id: "pgp2.25",
     title: "PGP 2.25",
-    image: require("../assets/images/coffee-icon.png"),
+    image: require("../assets/images/pgp225.png"),
   },
 ];
 
@@ -23,11 +23,6 @@ const ProductCard = ({ item, onPress }) => (
   <TouchableOpacity onPress={() => onPress(item.id)} activeOpacity={0.8}>
     <Card style={styles.card} mode="elevated">
       <Card.Cover source={item.image} style={styles.cardImage} />
-      <Card.Content style={styles.cardContent}>
-        <Text variant="titleLarge" style={styles.cardTitle}>
-          {item.title}
-        </Text>
-      </Card.Content>
     </Card>
   </TouchableOpacity>
 );
@@ -83,15 +78,7 @@ const styles = StyleSheet.create({
 
   },
   cardImage: {
-    height: 180,
+    height: 200,
     backgroundColor: '#f0f0f0',
-  },
-  cardContent: {
-    padding: 15,
-  },
-  cardTitle: {
-    fontWeight: "600",
-    color: "#34495E",
-    textAlign: 'center',
   },
 });

@@ -4,12 +4,12 @@
     "slug": "practise-app",
     "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/pgp_logo.png",
     "scheme": "practiseapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/coffee-splash.png",
-      "backgroundColor": "#000000",
+      "image": "./assets/images/pgp_splashscreen.png",
+      "backgroundColor": "#ffffff",
       "resizeMode": "cover"
     },
     "ios": {
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/pgp_logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -25,14 +25,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/pgp_favicon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/pgp_splashscreen.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

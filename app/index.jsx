@@ -21,7 +21,7 @@ const Index = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ImageBackground
-        source={require('../assets/images/coffee-splash.png')}
+        source={require('../assets/images/pgp_bg_img.png')}
         style={styles.background}
       >
         <KeyboardAvoidingView
@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 42,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'gray',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
     marginBottom: 10,
   },
   tagline: {
     fontSize: 18,
-    color: 'white',
+    color: 'gray',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
     marginBottom: 30,
