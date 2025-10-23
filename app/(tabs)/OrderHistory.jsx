@@ -5,7 +5,7 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, View } from "react-na
 import { Avatar, Card, Divider, List, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const API_URL = "http://10.56.121.186:8080/api";
+const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
 const OrderItemCard = ({ order }) => {
   const [expanded, setExpanded] = useState(false);

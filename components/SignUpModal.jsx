@@ -8,7 +8,7 @@ const SignUpModal = ({ toggleView }) => {
 
   const handleSignUpFormSubmit = async () => {
     try {
-      const response = await axios.post('http://10.56.121.186:8080/auth/signup', {
+      const response = await axios.post(`${process.env.EXPO_PUBLIC_BACKEND_URL}/auth/signup`, {
         username,
         phone,
         password,

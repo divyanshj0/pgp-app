@@ -7,7 +7,7 @@ import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 import { Avatar, Button, List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const API_URL = 'http://10.56.121.186:8080/api';
+const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
 const Profile = () => {
   const [user, setUser] = useState(null);
