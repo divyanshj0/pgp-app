@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Card, Modal, Portal, Surface, Text, TextInput } from "react-native-paper";
-
+import { useCart } from "../context/CartContext";
 
 const generateHexColor = () => {
   const letters = '0123456789ABCDEF';
@@ -19,10 +19,11 @@ const colors = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 
-export default function ColorChart({selectedcategory,handleBack}){
+export default function ColorChart({ selectedcategory, handleBack }) {
   const [visible, setVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState("1");
+  const { addToCart: addItemToCart } = useCart();
 
   const openModal = (color) => {
     setSelectedColor(color);
@@ -35,22 +36,25 @@ export default function ColorChart({selectedcategory,handleBack}){
     setSelectedColor(null);
   }
 
-  const addToCart = () => {
+  const handleAddToCart = () => {
     const numQuantity = parseInt(quantity, 10);
     if (isNaN(numQuantity) || numQuantity <= 0) {
-       Alert.alert("Invalid Quantity", "Please enter a valid quantity greater than 0.");
+      Alert.alert("Invalid Quantity", "Please enter a valid quantity greater than 0.");
       return;
     }
-    console.log("Added to cart:", {
-      categoryTitle: selectedcategory,
+    const itemToAdd = {
+      category: selectedcategory,
       colorId: selectedColor.id,
       colorName: selectedColor.name,
       colorHex: selectedColor.hex,
-      quantity: numQuantity, 
-    });
+      quantity: numQuantity,
+      color: selectedColor.name,
+      quantity: numQuantity,
+    };
+    addItemToCart(itemToAdd);
 
     closeModal();
-     Alert.alert("Added to Cart", `${numQuantity} x ${selectedColor.name} (${selectedcategory}) added.`);
+    Alert.alert("Added to Cart", `${numQuantity} x ${selectedColor.name} (${selectedcategory}) added.`);
   };
 
 
@@ -64,55 +68,55 @@ export default function ColorChart({selectedcategory,handleBack}){
   );
 
   return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerbutton} onPress={()=>handleBack()}>back</Text>
-          <Text variant="headlineMedium" style={styles.headertext}>
-            {selectedcategory}
-          </Text>
-        </View>
-
-        <FlatList
-          data={colors}
-          renderItem={renderColorItem}
-          numColumns={4}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContentContainer}
-        />
-
-        <Portal>
-          <Modal visible={visible} onDismiss={closeModal} contentContainerStyle={styles.modalContainer}>
-            <Card style={styles.modalCard}>
-              <Card.Title
-                title={selectedColor?.name || "Select Quantity"}
-                 subtitle={`Color Code: ${selectedColor?.hex || 'N/A'}`}
-                titleStyle={styles.modalTitle}
-                 left={() => selectedColor ? <View style={[styles.modalColorSwatch, { backgroundColor: selectedColor.hex }]} /> : null}
-              />
-              <Card.Content>
-                <TextInput
-                  label="Enter Quantity"
-                  value={quantity}
-                  onChangeText={setQuantity}
-                  keyboardType="numeric"
-                  mode="outlined"
-                  style={styles.input}
-                  dense
-                  autoFocus
-                />
-                <View style={styles.modalActions}>
-                   <Button mode="outlined" onPress={closeModal} style={styles.modalButton}>
-                     Cancel
-                   </Button>
-                   <Button mode="contained" onPress={addToCart} style={styles.modalButton}>
-                     Add to Cart
-                   </Button>
-                </View>
-              </Card.Content>
-            </Card>
-          </Modal>
-        </Portal>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerbutton} onPress={() => handleBack()}>back</Text>
+        <Text variant="headlineMedium" style={styles.headertext}>
+          {selectedcategory}
+        </Text>
       </View>
+
+      <FlatList
+        data={colors}
+        renderItem={renderColorItem}
+        numColumns={4}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContentContainer}
+      />
+
+      <Portal>
+        <Modal visible={visible} onDismiss={closeModal} contentContainerStyle={styles.modalContainer}>
+          <Card style={styles.modalCard}>
+            <Card.Title
+              title={selectedColor?.name || "Select Quantity"}
+              subtitle={`Color Code: ${selectedColor?.hex || 'N/A'}`}
+              titleStyle={styles.modalTitle}
+              left={() => selectedColor ? <View style={[styles.modalColorSwatch, { backgroundColor: selectedColor.hex }]} /> : null}
+            />
+            <Card.Content>
+              <TextInput
+                label="Enter Quantity"
+                value={quantity}
+                onChangeText={setQuantity}
+                keyboardType="numeric"
+                mode="outlined"
+                style={styles.input}
+                dense
+                autoFocus
+              />
+              <View style={styles.modalActions}>
+                <Button mode="outlined" onPress={closeModal} style={styles.modalButton}>
+                  Cancel
+                </Button>
+                <Button mode="contained" onPress={handleAddToCart} style={styles.modalButton}>
+                  Add to Cart
+                </Button>
+              </View>
+            </Card.Content>
+          </Card>
+        </Modal>
+      </Portal>
+    </View>
   );
 };
 
@@ -121,37 +125,37 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     backgroundColor: "#F8F9FA",
-    marginTop:40,
+    marginTop: 40,
   },
-  header:{
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'center',
-    padding:15,
-    position:'relative',
-    backgroundColor:'#E8F0F2'
+    justifyContent: 'center',
+    padding: 15,
+    position: 'relative',
+    backgroundColor: '#E8F0F2'
   },
-  headerbutton:{
-    position:'absolute',
-    top:20,
-    left:15,
-    fontSize:15,
-    color:"#fff",
-    padding:8,
-    borderRadius:10,
-    backgroundColor:"#000"
+  headerbutton: {
+    position: 'absolute',
+    top: 20,
+    left: 15,
+    fontSize: 15,
+    color: "#fff",
+    padding: 8,
+    borderRadius: 10,
+    backgroundColor: "#000"
   },
   headertext: {
-    fontWeight: "bold", 
+    fontWeight: "bold",
     color: "#1C2833",
     textAlign: "center",
   },
-   listContentContainer: {
+  listContentContainer: {
     paddingBottom: 2,
   },
   colorTouchable: {
-     flex: 1 / 4,
-     padding: 6,
+    flex: 1 / 4,
+    padding: 6,
   },
   colorBox: {
     aspectRatio: 1,
@@ -167,7 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginBottom: 5,
   },
-   colorNameText: {
+  colorNameText: {
     fontSize: 10,
     color: '#555',
     textAlign: 'center',
@@ -176,14 +180,14 @@ const styles = StyleSheet.create({
   modalContainer: {
     padding: 20,
   },
-   modalCard: {
-     borderRadius: 12,
-   },
+  modalCard: {
+    borderRadius: 12,
+  },
   modalTitle: {
     fontWeight: "bold",
     marginBottom: 15,
   },
-   modalColorSwatch: {
+  modalColorSwatch: {
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -194,12 +198,12 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 20,
   },
-   modalActions: {
+  modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: 10,
   },
-   modalButton: {
+  modalButton: {
     marginLeft: 8,
   },
 });
