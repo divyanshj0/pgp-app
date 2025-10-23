@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView } from "react-native";
+import { View } from "react-native";
 import ColorChartScreen from "../../components/ColorChart";
 import HomePage from "../../components/HomePage";
 export default function Home() {
@@ -11,23 +11,23 @@ export default function Home() {
     setIspressed(true);
   };
   const handleBack=()=>{
-    selectedcategory('');
+    setSelectedcategory('');
     setIspressed(false);
   }
   return (
-      <ScrollView>
+      <View style={{flex:1}}>
         {ispressed ? (
           <ColorChartScreen
             selectedcategory={selectedcategory}
+            handleBack={handleBack}
           />
         ) : (
           <HomePage
             handlePress={handlePress}
-            handleBack={handleBack}
           />
         )
         }
-      </ScrollView>
+      </View>
   )
 
 };

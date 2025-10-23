@@ -1,53 +1,51 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Card, Text } from "react-native-paper";
 
 const categories = [
-    {
-        id: "pgp555",
-        title: "PGP 555",
-        image: require("../assets/images/coffee-icon.png"),
-    },
-    {
-        id: "pgp777",
-        title: "PGP 777",
-        image: require("../assets/images/coffee-icon.png"),
-    },
-    {
-        id: "pgp2.25",
-        title: "PGP 2.25",
-        image: require("../assets/images/coffee-icon.png"),
-    },
+  {
+    id: "pgp555",
+    title: "PGP 555",
+    image: require("../assets/images/coffee-icon.png"),
+  },
+  {
+    id: "pgp777",
+    title: "PGP 777",
+    image: require("../assets/images/coffee-icon.png"),
+  },
+  {
+    id: "pgp2.25",
+    title: "PGP 2.25",
+    image: require("../assets/images/coffee-icon.png"),
+  },
 ];
 
 const ProductCard = ({ item, onPress }) => (
-    <TouchableOpacity onPress={() => onPress(item.id)} activeOpacity={0.8}>
-        <Card style={styles.card} mode="elevated">
-            <Card.Cover source={item.image} style={styles.cardImage} />
-            <Card.Content style={styles.cardContent}>
-                <Text variant="titleLarge" style={styles.cardTitle}>
-                    {item.title}
-                </Text>
-            </Card.Content>
-        </Card>
-    </TouchableOpacity>
+  <TouchableOpacity onPress={() => onPress(item.id)} activeOpacity={0.8}>
+    <Card style={styles.card} mode="elevated">
+      <Card.Cover source={item.image} style={styles.cardImage} />
+      <Card.Content style={styles.cardContent}>
+        <Text variant="titleLarge" style={styles.cardTitle}>
+          {item.title}
+        </Text>
+      </Card.Content>
+    </Card>
+  </TouchableOpacity>
 );
-export default function HomePage({handlePress,handleBack}) {
-    return (
-        <SafeAreaView style={styles.container} >
-            <View style={styles.header}>
-                <Button style={styles.headerbutton} onPress={()=>handleBack()}>Back</Button>                
-                <Text style={styles.headertext}>Our Product Range</Text>
-
-            </View>
-
-            <View style={styles.grid}>
-                {categories.map((item) => (
-                    <ProductCard key={item.id} item={item} onPress={()=>handlePress(item.id)} />
-                ))}
-            </View>
-        </SafeAreaView >
-    )
+export default function HomePage({ handlePress}) {
+  return (
+    <View style={styles.container} >
+      <View style={styles.header}>
+        <Text style={styles.headertext}>Our Product Range</Text>
+      </View>
+      <ScrollView>
+        <View style={styles.grid}>
+          {categories.map((item) => (
+            <ProductCard key={item.id} item={item} onPress={() => handlePress(item.id)} />
+          ))}
+        </View>
+      </ScrollView>
+    </View >
+  )
 }
 const styles = StyleSheet.create({
   container: {
@@ -56,17 +54,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
   },
-  header:{
-    flexDirection:'row',
-    gap:20,
-    padding:5,
-    alignItems:'center'
-  },
-  headerbutton:{
-    borderRadius:10,
-    padding:5,
-    fontSize:20,
-    textAlign:'center'
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:'center'
   },
   headertext: {
     fontSize: 26,
@@ -76,7 +67,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   grid: {
-    paddingBottom: 16,
+    paddingVertical: 10,
   },
   card: {
     flex: 1,
@@ -92,16 +83,15 @@ const styles = StyleSheet.create({
 
   },
   cardImage: {
-    height: 140,
+    height: 180,
     backgroundColor: '#f0f0f0',
   },
   cardContent: {
-    padding: 12,
+    padding: 15,
   },
   cardTitle: {
     fontWeight: "600",
     color: "#34495E",
-    marginBottom: 4,
     textAlign: 'center',
   },
 });

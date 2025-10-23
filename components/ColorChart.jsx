@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, Card, Modal, Portal, Surface, Text, TextInput } from "react-native-paper"; // Added Surface
-import { SafeAreaView } from "react-native-safe-area-context"; // Use SafeAreaView
+import { Button, Card, Modal, Portal, Surface, Text, TextInput } from "react-native-paper";
 
 
 const generateHexColor = () => {
@@ -20,7 +19,7 @@ const colors = Array.from({ length: 100 }, (_, i) => ({
 }));
 
 
-export default function ColorChart({selectedcategory}){
+export default function ColorChart({selectedcategory,handleBack}){
   const [visible, setVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState("1");
@@ -39,58 +38,50 @@ export default function ColorChart({selectedcategory}){
   const addToCart = () => {
     const numQuantity = parseInt(quantity, 10);
     if (isNaN(numQuantity) || numQuantity <= 0) {
-       Alert.alert("Invalid Quantity", "Please enter a valid quantity greater than 0."); // Provide feedback
+       Alert.alert("Invalid Quantity", "Please enter a valid quantity greater than 0.");
       return;
     }
-    // --- Add to Cart Logic ---
-    // Here you would typically dispatch an action to a state management library (like Redux or Zustand)
-    // or update a context, or save directly to AsyncStorage.
     console.log("Added to cart:", {
       categoryTitle: selectedcategory,
       colorId: selectedColor.id,
       colorName: selectedColor.name,
       colorHex: selectedColor.hex,
-      quantity: numQuantity, // Use parsed quantity
+      quantity: numQuantity, 
     });
-    // --- End Add to Cart Logic ---
 
-    closeModal(); // Close modal after adding
-    // Optionally navigate to cart or show confirmation
+    closeModal();
      Alert.alert("Added to Cart", `${numQuantity} x ${selectedColor.name} (${selectedcategory}) added.`);
   };
 
 
-  // --- Render Item Component ---
   const renderColorItem = ({ item }) => (
     <TouchableOpacity onPress={() => openModal(item)} style={styles.colorTouchable}>
-      <Surface style={styles.colorBox} elevation={2}> {/* Use Surface for elevation */}
+      <Surface style={styles.colorBox} elevation={2}>
         <View style={[styles.colorPreview, { backgroundColor: item.hex }]} />
-         {/* Show color name below swatch */}
         <Text style={styles.colorNameText} numberOfLines={1}>{item.name}</Text>
       </Surface>
     </TouchableOpacity>
   );
-  // --- End Render Item Component ---
 
   return (
-    <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <Text variant="headlineMedium" style={styles.header}>
-          {selectedcategory} - Select Color
-        </Text>
+        <View style={styles.header}>
+          <Text style={styles.headerbutton} onPress={()=>handleBack()}>back</Text>
+          <Text variant="headlineMedium" style={styles.headertext}>
+            {selectedcategory}
+          </Text>
+        </View>
 
         <FlatList
           data={colors}
-          renderItem={renderColorItem} // Use the render component
-          numColumns={4} // Adjust number of columns for better spacing
+          renderItem={renderColorItem}
+          numColumns={4}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContentContainer}
         />
 
-        {/* --- Enhanced Quantity Modal --- */}
         <Portal>
           <Modal visible={visible} onDismiss={closeModal} contentContainerStyle={styles.modalContainer}>
-             {/* Use Card for modal styling */}
             <Card style={styles.modalCard}>
               <Card.Title
                 title={selectedColor?.name || "Select Quantity"}
@@ -104,12 +95,11 @@ export default function ColorChart({selectedcategory}){
                   value={quantity}
                   onChangeText={setQuantity}
                   keyboardType="numeric"
-                  mode="outlined" // Use outlined style
+                  mode="outlined"
                   style={styles.input}
-                  dense // Make input slightly smaller
-                   autoFocus // Focus input when modal opens
+                  dense
+                  autoFocus
                 />
-                 {/* Action buttons in a row */}
                 <View style={styles.modalActions}>
                    <Button mode="outlined" onPress={closeModal} style={styles.modalButton}>
                      Cancel
@@ -122,60 +112,72 @@ export default function ColorChart({selectedcategory}){
             </Card>
           </Modal>
         </Portal>
-         {/* --- End Enhanced Modal --- */}
       </View>
-    </SafeAreaView>
   );
 };
 
-// --- Updated Styles ---
 const styles = StyleSheet.create({
-   safeArea: {
-    flex: 1,
-    backgroundColor: "#F8F9FA", // Light background
-  },
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    backgroundColor: "#F8F9FA",
+    marginTop:40,
   },
-  header: {
-    fontWeight: "bold", // Bolder header
-    color: "#1C2833", // Darker header color
+  header:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent:'center',
+    padding:15,
+    position:'relative',
+    backgroundColor:'#E8F0F2'
+  },
+  headerbutton:{
+    position:'absolute',
+    top:20,
+    left:15,
+    fontSize:15,
+    color:"#fff",
+    padding:8,
+    borderRadius:10,
+    backgroundColor:"#000"
+  },
+  headertext: {
+    fontWeight: "bold", 
+    color: "#1C2833",
     textAlign: "center",
-    marginBottom: 20, // Increased margin
   },
    listContentContainer: {
-    paddingBottom: 2, // Padding at the bottom of the list
+    paddingBottom: 2,
   },
   colorTouchable: {
-     flex: 1 / 4, // Makes it fit 4 columns
-     padding: 6, // Padding around touchable for spacing
+     flex: 1 / 4,
+     padding: 6,
   },
   colorBox: {
-    aspectRatio: 1, // Keep it square
-    borderRadius: 8, // Slightly more rounded
+    aspectRatio: 1,
+    borderRadius: 8,
     backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
-    overflow: 'hidden', // Ensure content doesn't overflow rounded corners
+    overflow: 'hidden',
   },
   colorPreview: {
-    width: "80%", // Color swatch size
-    height: "65%", // Adjust aspect ratio
+    width: "80%",
+    height: "65%",
     borderRadius: 6,
-    marginBottom: 5, // Space between swatch and text
+    marginBottom: 5,
   },
    colorNameText: {
     fontSize: 10,
     color: '#555',
     textAlign: 'center',
-    paddingHorizontal: 2, // Prevent text overflow
+    paddingHorizontal: 2,
   },
   modalContainer: {
-    padding: 20, // Use padding instead of margin for modal container
+    padding: 20,
   },
    modalCard: {
-     borderRadius: 12, // Rounded corners for modal card
+     borderRadius: 12,
    },
   modalTitle: {
     fontWeight: "bold",
@@ -184,20 +186,20 @@ const styles = StyleSheet.create({
    modalColorSwatch: {
     width: 30,
     height: 30,
-    borderRadius: 15, // Make it circular
+    borderRadius: 15,
     borderWidth: 1,
     borderColor: '#ddd',
-    marginLeft: 8, // Adjust positioning
+    marginLeft: 8,
   },
   input: {
-    marginBottom: 20, // Space below input
+    marginBottom: 20,
   },
    modalActions: {
     flexDirection: 'row',
-    justifyContent: 'flex-end', // Align buttons to the right
+    justifyContent: 'flex-end',
     marginTop: 10,
   },
    modalButton: {
-    marginLeft: 8, // Space between buttons
+    marginLeft: 8,
   },
 });
