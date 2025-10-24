@@ -2,21 +2,13 @@ import { useState } from "react";
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Card, Modal, Portal, Surface, Text, TextInput } from "react-native-paper";
 import { useCart } from "../context/CartContext";
+import { predefinedColors } from "../data/colorsData";
 
-const generateHexColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  const r = Math.floor(Math.random() * 155 + 50).toString(16).padStart(2, '0');
-  const g = Math.floor(Math.random() * 155 + 50).toString(16).padStart(2, '0');
-  const b = Math.floor(Math.random() * 155 + 50).toString(16).padStart(2, '0');
-  return `#${r}${g}${b}`;
-};
-
-const colors = Array.from({ length: 100 }, (_, i) => ({
-  id: `color_${i + 1}`,
-  name: `Shade ${i + 1}`,
-  hex: generateHexColor(),
-}));
+const colors = predefinedColors.map(color => ({
+  id: `color_${color.color_id}`,
+  name: `Shade ${color.color_id}`,
+  hex: color.color_hexcode,
+}))
 
 
 export default function ColorChart({ selectedcategory, handleBack }) {
@@ -45,9 +37,7 @@ export default function ColorChart({ selectedcategory, handleBack }) {
     const itemToAdd = {
       category: selectedcategory,
       colorId: selectedColor.id,
-      colorName: selectedColor.name,
       colorHex: selectedColor.hex,
-      quantity: numQuantity,
       color: selectedColor.name,
       quantity: numQuantity,
     };

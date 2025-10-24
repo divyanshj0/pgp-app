@@ -13,8 +13,9 @@ const LoginModal = ({ toggleView }) => {
                 phone,
                 password,
             });
-            const { token } = response.data;
+            const { token,authority } = response.data;
             await AsyncStorage.setItem('token',token);
+            await AsyncStorage.setItem('authority',authority);
             router.replace('/(tabs)');
         } catch (error) {
             if (error.response) {

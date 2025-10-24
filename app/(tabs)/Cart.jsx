@@ -35,7 +35,7 @@ const Cart = () => {
 
       const orderItems = cartItems.map(item => ({
         category: item.category,
-        color: item.colorName,
+        color: item.color,
         quantity: item.quantity,
       }));
 
