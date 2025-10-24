@@ -8,7 +8,8 @@ const RootLayout = () => {
       <SafeAreaProvider>
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)/(user)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)/(admin)" options={{ headerShown: false }} />
         </Stack>
       </SafeAreaProvider>
     </CartProvider>

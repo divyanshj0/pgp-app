@@ -16,7 +16,14 @@ const LoginModal = ({ toggleView }) => {
             const { token,authority } = response.data;
             await AsyncStorage.setItem('token',token);
             await AsyncStorage.setItem('authority',authority);
-            router.replace('/(tabs)');
+            if (authority === 'ADMIN') {
+                router.replace('/(tabs)/(admin)/'); 
+            } else if (authority === 'USER') {
+                router.replace('/(tabs)/(user)/');
+            } else {
+                Alert.alert('Login Error', 'Unknown user role.');
+                router.replace('/'); // Send back to login
+            }
         } catch (error) {
             if (error.response) {
                 Alert.alert('Login Failed', error.response.data.message);
@@ -27,7 +34,6 @@ const LoginModal = ({ toggleView }) => {
     };
 
     const handleForgotPassword = () => {
-        // Implement forgot password navigation here
         Alert.alert('Forgot Password', 'Navigating to forgot password screen...');
     };
     return (

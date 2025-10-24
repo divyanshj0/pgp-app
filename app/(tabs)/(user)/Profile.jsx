@@ -49,6 +49,7 @@ const Profile = () => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('authority');
       await AsyncStorage.removeItem('@user_cart');
       clearCart();
       router.replace('/');
@@ -57,8 +58,6 @@ const Profile = () => {
       Alert.alert('Logout Failed', 'An error occurred during logout.');
     }
   };
-
-
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
