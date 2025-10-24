@@ -12,6 +12,10 @@ export default function AdminTabs() {
           options={{ title: "Home", tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} /> }}
         />
         <Tabs.Screen
+          name="Users"
+          options={{ title: "Users", tabBarIcon: ({ color }) => <FontAwesome name="users" size={24} color={color} /> }}
+        />
+        <Tabs.Screen
           name="Profile"
           options={{ title: "Profile", tabBarIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} /> }}
         />
