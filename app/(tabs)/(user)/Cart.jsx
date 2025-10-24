@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Divider, IconButton, List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../../context/CartContext';
 
 const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 

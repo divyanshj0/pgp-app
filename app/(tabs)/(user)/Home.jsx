@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
-import ColorChartScreen from "../../components/ColorChart";
-import HomePage from "../../components/HomePage";
+import ColorChartScreen from "../../../components/ColorChart";
+import HomePage from "../../../components/HomePage";
 export default function Home() {
   const [selectedcategory, setSelectedcategory] = useState('');
   const [ispressed, setIspressed] = useState(false);

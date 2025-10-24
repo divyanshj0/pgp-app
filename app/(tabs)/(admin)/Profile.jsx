@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 import { Avatar, Button, List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../../context/CartContext';
 const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
 const Profile = () => {

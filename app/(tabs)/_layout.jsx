@@ -1,46 +1,29 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+// app/(tabs)/_layout.jsx
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Redirect } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 
-function TabBarIcon(props) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-export default function TabLayout() {
-  return (
-    <SafeAreaProvider>
-      <PaperProvider>
-        <Tabs screenOptions={{ headerShown: false }}>
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: 'Home',
-              tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="OrderHistory"
-            options={{
-              title: 'Orders',
-              tabBarIcon: ({ color }) => <TabBarIcon name="history" color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="Cart"
-            options={{
-              title: 'Cart',
-              tabBarIcon: ({ color }) => <TabBarIcon name="shopping-cart" color={color} />,
-            }}
-          />
-          <Tabs.Screen
-            name="Profile"
-            options={{
-              title: 'Profile',
-              tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-            }}
-          />
-        </Tabs>
-      </PaperProvider>
-    </SafeAreaProvider>
-  );
+export default function TabsLayout() {
+  const [authority, setAuthority] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    AsyncStorage.getItem("authority").then((role) => {
+      setAuthority(role);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading)
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+
+  if (authority === "ADMIN") return <Redirect href="/(tabs)/(admin)/Profile" />;
+  if (authority === "USER") return <Redirect href="/(tabs)/(user)/" />;
+
+  return <Redirect href="/login" />;
 }
