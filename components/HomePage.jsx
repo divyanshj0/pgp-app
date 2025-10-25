@@ -8,8 +8,8 @@ const categories = [
     image: require("../assets/images/pgp555.png"),
   },
   {
-    id: "pgp777",
-    title: "PGP 777",
+    id: "pgp555(R)",
+    title: "PGP 555(R)",
     image: require("../assets/images/pgp555(R).png"),
   },
   {
@@ -46,8 +46,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E8F0F2",
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -62,12 +61,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   grid: {
-    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   card: {
     flex: 1,
     margin: 8,
-    borderRadius: 12,
+    borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#FFFFFF",
     elevation: 3,
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
 
   },
   cardImage: {
-    height: 200,
+    height: 220,
     backgroundColor: '#f0f0f0',
   },
 });

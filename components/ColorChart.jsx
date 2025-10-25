@@ -113,7 +113,6 @@ export default function ColorChart({ selectedcategory, handleBack }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
     backgroundColor: "#F8F9FA",
     marginTop: 40,
   },
@@ -141,7 +140,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   listContentContainer: {
-    paddingBottom: 2,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   colorTouchable: {
     flex: 1 / 4,

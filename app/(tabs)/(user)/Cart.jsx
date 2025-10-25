@@ -118,6 +118,7 @@ const Cart = () => {
                     description={`Qty: ${item.quantity}`}
                     titleStyle={styles.itemTitle}
                     descriptionStyle={styles.itemDescription}
+                    style={styles.listitem}
                     left={() => (
                       <View style={[styles.colorSwatch, { backgroundColor: item.colorHex }]} />
                     )}
@@ -174,12 +175,10 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
-    paddingBottom: 80,
   },
   mainTitle: {
     fontWeight: '700',
     color: '#1a237e',
-    marginBottom: 20,
     textAlign: 'center',
   },
   loaderContainer: {
@@ -218,10 +217,6 @@ const styles = StyleSheet.create({
   divider: {
     backgroundColor: '#e0e0e0',
   },
-  itemsContainer: {
-    paddingTop: 8,
-    paddingBottom: 0,
-  },
   itemTitle: {
     fontSize: 15,
     fontWeight: '500',
@@ -232,9 +227,9 @@ const styles = StyleSheet.create({
     color: '#78909c',
   },
   colorSwatch: {
-    width: 24,
-    height: 24,
-    borderRadius: 4,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
     marginRight: 15,
     alignSelf: 'center',
     borderWidth: 1,
@@ -246,7 +241,7 @@ const styles = StyleSheet.create({
   },
   quantityText: {
     marginHorizontal: 8,
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: '500',
     minWidth: 20,
     textAlign: 'center',
@@ -261,6 +256,7 @@ const styles = StyleSheet.create({
   placeOrderButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color:'#000',
   },
 });
 
