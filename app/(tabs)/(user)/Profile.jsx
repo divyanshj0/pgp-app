@@ -25,8 +25,7 @@ const Profile = () => {
       if (!token) {
         Alert.alert('Error', 'Authentication token not found.');
         setLoading(false);
-        // Optionally redirect to login
-        router.replace('/');
+        router.replace('../../login');
         return;
       }
       const response = await axios.get(`${API_URL}/profile`, {
@@ -52,7 +51,7 @@ const Profile = () => {
       await AsyncStorage.removeItem('authority');
       await AsyncStorage.removeItem('@user_cart');
       clearCart();
-      router.replace('/');
+      router.push('../../login');
     } catch (error) {
       console.error("Logout Error:", error);
       Alert.alert('Logout Failed', 'An error occurred during logout.');

@@ -12,7 +12,7 @@ const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const {clearCart}=useCart();
+  const { clearCart } = useCart();
 
   useEffect(() => {
     fetchProfile();
@@ -26,7 +26,7 @@ const Profile = () => {
         Alert.alert('Error', 'Authentication token not found.');
         setLoading(false);
         // Optionally redirect to login
-        router.replace('/');
+        router.replace('../../login');
         return;
       }
       const response = await axios.get(`${API_URL}/profile`, {
@@ -51,7 +51,7 @@ const Profile = () => {
       await AsyncStorage.removeItem('token');
       await AsyncStorage.removeItem('@user_cart');
       clearCart();
-      router.replace('/');
+      router.replace('../../login');
     } catch (error) {
       console.error("Logout Error:", error);
       Alert.alert('Logout Failed', 'An error occurred during logout.');
@@ -88,7 +88,7 @@ const Profile = () => {
       {/* Glass Card with Blur Effect */}
       <BlurView intensity={90} style={styles.glassCard}>
         <List.Section>
-          <List.Item title="Phone" description={user.phone} titleStyle={styles.itemTitle} descriptionStyle={styles.itemDescription} left={props => <List.Icon {...props} icon="phone" color='black'/>}/>
+          <List.Item title="Phone" description={user.phone} titleStyle={styles.itemTitle} descriptionStyle={styles.itemDescription} left={props => <List.Icon {...props} icon="phone" color='black' />} />
         </List.Section>
       </BlurView>
 
@@ -161,18 +161,18 @@ const styles = StyleSheet.create({
     padding: 4,
     marginVertical: 10,
     backgroundColor: "#f5f8fd",
-    color:"#000",
+    color: "#000",
     shadowColor: "#000",
     shadowOpacity: 0.12,
     shadowRadius: 7,
     elevation: 8,
     overflow: "hidden"
   },
-  itemTitle:{
-    color:'#000',
+  itemTitle: {
+    color: '#000',
   },
-  itemDescription:{
-    color:'#000',
+  itemDescription: {
+    color: '#000',
   },
   logoutButton: {
     marginTop: 30,

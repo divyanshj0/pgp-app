@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "practise-app",
-    "slug": "practise-app",
+    "name": "pgp-app",
+    "slug": "pgp-app",
     "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/pgp_logo.png",
-    "scheme": "practiseapp",
+    "scheme": "pgpapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/pgp_splashscreen.png",
