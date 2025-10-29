@@ -140,8 +140,7 @@ const Profile = () => {
                     end={{ x: 1, y: 1 }}
                     style={styles.headerGradient}
                 >
-                    <Text variant='headlineSmall' style={styles.headerSubtitle}>My</Text>
-                    <Text variant='headlineLarge' style={styles.headerTitle}>Profile</Text>
+                    <Text variant='headlineSmall' style={styles.headerSubtitle}>My Profile</Text>
                 </LinearGradient>
             </Animated.View>
 
@@ -270,17 +269,12 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
         paddingTop: 20,
-        paddingBottom: 80,
+        paddingBottom: 60,
         paddingHorizontal: 20,
     },
     headerSubtitle: {
         color: '#e0e7ff',
         fontWeight: '400',
-    },
-    headerTitle: {
-        color: '#fff',
-        fontWeight: '700',
-        marginTop: 4,
     },
 
     // Content

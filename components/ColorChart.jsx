@@ -1,6 +1,7 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, Card, Modal, Portal, Surface, Text, TextInput } from "react-native-paper";
+import { Button, Card, IconButton, Modal, Portal, Surface, Text, TextInput } from "react-native-paper";
 import { useCart } from "../context/CartContext";
 import { predefinedColors } from "../data/colorsData";
 
@@ -19,8 +20,8 @@ export default function ColorChart({ selectedcategory, handleBack }) {
 
   const openModal = (color) => {
     setSelectedColor(color);
-    setVisible(true);
     setQuantity("1");
+    setVisible(true);
   };
 
   const closeModal = () => {
@@ -47,11 +48,17 @@ export default function ColorChart({ selectedcategory, handleBack }) {
     Alert.alert("Added to Cart", `${numQuantity} x ${selectedColor.name} (${selectedcategory}) added.`);
   };
 
-
   const renderColorItem = ({ item }) => (
-    <TouchableOpacity onPress={() => openModal(item)} style={styles.colorTouchable}>
-      <Surface style={styles.colorBox} elevation={2}>
-        <View style={[styles.colorPreview, { backgroundColor: item.hex }]} />
+    <TouchableOpacity onPress={() => openModal(item)} activeOpacity={0.77} style={styles.colorTouchable}>
+      <Surface style={styles.colorBox} elevation={4}>
+        <LinearGradient
+          colors={['#fff', item.hex]}
+          style={styles.gradientPreview}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 1 }}
+        >
+          <View style={[styles.colorPreview, { backgroundColor: item.hex }]} />
+        </LinearGradient>
         <Text style={styles.colorNameText} numberOfLines={1}>{item.name}</Text>
       </Surface>
     </TouchableOpacity>
@@ -59,12 +66,15 @@ export default function ColorChart({ selectedcategory, handleBack }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerbutton} onPress={() => handleBack()}>back</Text>
-        <Text variant="headlineMedium" style={styles.headertext}>
-          {selectedcategory}
-        </Text>
-      </View>
+      <LinearGradient
+        colors={['#8b5cf6', '#6366f1']}
+        style={styles.headerGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+      >
+        <IconButton icon="arrow-left" size={22} iconColor="#fff" style={styles.headerBackIcon} onPress={handleBack} />
+        <Text variant="headlineMedium" style={styles.headertext}>{selectedcategory}</Text>
+      </LinearGradient>
 
       <FlatList
         data={colors}
@@ -72,6 +82,7 @@ export default function ColorChart({ selectedcategory, handleBack }) {
         numColumns={4}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContentContainer}
+        showsVerticalScrollIndicator={false}
       />
 
       <Portal>
@@ -81,6 +92,7 @@ export default function ColorChart({ selectedcategory, handleBack }) {
               title={selectedColor?.name || "Select Quantity"}
               subtitle={`Color Code: ${selectedColor?.hex || 'N/A'}`}
               titleStyle={styles.modalTitle}
+              subtitleStyle={styles.modalTitle}
               left={() => selectedColor ? <View style={[styles.modalColorSwatch, { backgroundColor: selectedColor.hex }]} /> : null}
             />
             <Card.Content>
@@ -91,6 +103,7 @@ export default function ColorChart({ selectedcategory, handleBack }) {
                 keyboardType="numeric"
                 mode="outlined"
                 style={styles.input}
+                textColor="black"
                 dense
                 autoFocus
               />
@@ -108,92 +121,132 @@ export default function ColorChart({ selectedcategory, handleBack }) {
       </Portal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
-    marginTop: 40,
+    backgroundColor: "#f8fafc",
   },
-  header: {
+  headerGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 15,
-    position: 'relative',
-    backgroundColor: '#E8F0F2'
+    paddingTop: 32,
+    paddingBottom:16,
+    paddingHorizontal: 18,
+    marginBottom: 8,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+    elevation: 3,
+    shadowColor: "#6366f1",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
   },
-  headerbutton: {
-    position: 'absolute',
-    top: 20,
-    left: 15,
-    fontSize: 15,
-    color: "#fff",
-    padding: 8,
-    borderRadius: 10,
-    backgroundColor: "#000"
+  headerBackIcon: {
+    marginRight: 0,
+    marginLeft: -4,
+    backgroundColor: "rgba(255,255,255,0.13)"
   },
   headertext: {
-    fontWeight: "bold",
-    color: "#1C2833",
     textAlign: "center",
+    flex: 1,
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 22,
+    letterSpacing: 1,
   },
   listContentContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 10,
+    gap: 10,
   },
   colorTouchable: {
     flex: 1 / 4,
-    padding: 6,
+    padding: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   colorBox: {
     aspectRatio: 1,
-    borderRadius: 8,
-    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    shadowColor: "#8b5cf6",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.11,
+    shadowRadius: 13,
+    marginBottom: 2,
+    height:92
+  },
+  gradientPreview: {
+    width: "89%",
+    height: "70%",
+    marginTop: 3,
+    borderRadius: 10,
+    marginBottom: 7,
     justifyContent: "center",
     alignItems: "center",
     overflow: 'hidden',
   },
   colorPreview: {
-    width: "80%",
-    height: "65%",
-    borderRadius: 6,
-    marginBottom: 5,
+    width: "88%",
+    height: "83%",
+    borderRadius: 10,
+    borderWidth: 1.8,
+    borderColor: "#f2f3f8"
   },
   colorNameText: {
     fontSize: 10,
-    color: '#555',
+    color: '#28294d',
+    fontWeight: "600",
     textAlign: 'center',
     paddingHorizontal: 2,
+    letterSpacing: 0.06
   },
   modalContainer: {
-    padding: 20,
+    margin: 16,
+    padding: 0,
+    justifyContent: 'center',
   },
   modalCard: {
-    borderRadius: 12,
+    borderRadius: 16,
+    backgroundColor: "#ffffffee",
+    paddingVertical: 10,
+    paddingHorizontal: 2,
   },
   modalTitle: {
     fontWeight: "bold",
-    marginBottom: 15,
+    color:"black",
+    marginBottom: 4,
+  },
+  modalSubTitle: {
+    fontWeight: "bold",
+    color:"black",
   },
   modalColorSwatch: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    marginLeft: 8,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+    marginLeft: 0,
   },
   input: {
     marginBottom: 20,
+    backgroundColor: "#fbfcfc",
+    color:'black',
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 10,
+    marginTop: 16,
+    paddingRight: 4,
   },
   modalButton: {
     marginLeft: 8,
+    paddingHorizontal: 10,
+    borderRadius: 9
   },
 });

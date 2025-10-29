@@ -6,10 +6,12 @@ const RootLayout = () => {
   return (
     <CartProvider>
       <SafeAreaProvider>
-        <Stack>
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)/(user)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)/(admin)" options={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+           <Stack.Screen name="login" />
+           <Stack.Screen name="(tabs)/(user)" />
+           <Stack.Screen name="(tabs)/(admin)" />
+           <Stack.Screen name="UserDetails/[userId]" />
         </Stack>
       </SafeAreaProvider>
     </CartProvider>

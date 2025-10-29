@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Divider, IconButton, List, Text } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button, Chip, Divider, IconButton, Surface, Text } from 'react-native-paper';
 import { useCart } from '../../../context/CartContext';
 const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
@@ -77,109 +77,140 @@ const Cart = () => {
   if (cartLoading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#1e88e5" />
+        <ActivityIndicator size="large" color="#6366f1" />
+        <Text style={styles.loadingText}>Loading Cart...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#1e88e5"]} // Android indicator color
-            tintColor={"#1e88e5"} // iOS indicator color
-          />
-        }
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={["#6366f1"]}
+          tintColor={"#6366f1"}
+        />
+      }
+    >
+      <LinearGradient
+        colors={['#8b5cf6', '#6366f1']}
+        style={styles.headerGradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
       >
-        <Text variant="headlineMedium" style={styles.mainTitle}>
+        <Text variant="headlineLarge" style={styles.mainTitle}>
           Your Cart 🛒
         </Text>
+        <Text style={styles.subTitle}>Review and update your selections</Text>
+      </LinearGradient>
 
-        {Object.keys(groupedItems).length === 0 ? (
-          <Card style={styles.emptyCard}>
-            <Card.Content>
-              <Text style={styles.noItemsText}>Your cart is empty.</Text>
-            </Card.Content>
-          </Card>
-        ) : (
-          Object.entries(groupedItems).map(([category, items]) => (
-            <Card key={category} style={styles.categoryCard} mode="elevated">
-              <Card.Title title={category} titleStyle={styles.categoryTitle} />
-              <Divider style={styles.divider} />
-              <Card.Content style={styles.itemsContainer}>
-                {items.map((item, index) => (
-                  <List.Item
-                    key={`${item.category}-${item.colorHex}-${index}`}
-                    title={item.colorName}
-                    description={`Qty: ${item.quantity}`}
-                    titleStyle={styles.itemTitle}
-                    descriptionStyle={styles.itemDescription}
-                    style={styles.listitem}
-                    left={() => (
-                      <View style={[styles.colorSwatch, { backgroundColor: item.colorHex }]} />
-                    )}
-                    right={() => (
-                      <View style={styles.itemActions}>
-                        <IconButton
-                          icon="minus-circle-outline"
-                          size={20}
-                          onPress={() => handleQuantityChange(item, -1)}
-                        />
-                        <Text style={styles.quantityText}>{item.quantity}</Text>
-                        <IconButton
-                          icon="plus-circle-outline"
-                          size={20}
-                          onPress={() => handleQuantityChange(item, 1)}
-                        />
-                        <IconButton
-                          icon="trash-can-outline"
-                          size={20}
-                          onPress={() => removeFromCart(item.category, item.colorHex)}
-                          iconColor="red"
-                        />
-                      </View>
-                    )}
-                  />
-                ))}
-              </Card.Content>
-            </Card>
-          ))
-        )}
+      {Object.keys(groupedItems).length === 0 ? (
+        <Surface style={styles.emptyCard}>
+          <IconButton
+            icon="cart-off"
+            size={46}
+            style={styles.emptyIcon}
+            color="#e0e7ff"
+          />
+          <Text style={styles.noItemsText}>Your cart is empty.</Text>
+        </Surface>
+      ) : (
+        Object.entries(groupedItems).map(([category, items]) => (
+          <Surface key={category} style={styles.categoryCard} elevation={3}>
+            <View style={styles.categoryHeader}>
+              <Text style={styles.categoryTitle}>{category}</Text>
+              <Chip style={styles.chip} textStyle={styles.chipText}>{items.length} Shades</Chip>
+            </View>
+            <Divider style={styles.divider} />
+            <View style={styles.itemsContainer}>
+              {items.map((item, index) => (
+                <View style={styles.itemRow} key={`${item.category}-${item.colorHex}-${index}`}>
+                  <View style={styles.itemInfo}>
+                    <View style={[styles.colorSwatch, { backgroundColor: item.colorHex }]} />
+                    <Text style={styles.itemTitle}>{item.colorName}</Text>
+                    <Text style={styles.itemDescription}>Qty: {item.quantity}</Text>
+                  </View>
+                  <View style={styles.itemActions}>
+                    <IconButton
+                      icon="minus-circle-outline"
+                      size={22}
+                      onPress={() => handleQuantityChange(item, -1)}
+                      style={styles.iconBtn}
+                    />
+                    <Text style={styles.quantityText}>{item.quantity}</Text>
+                    <IconButton
+                      icon="plus-circle-outline"
+                      size={22}
+                      onPress={() => handleQuantityChange(item, 1)}
+                      style={styles.iconBtn}
+                    />
+                    <IconButton
+                      icon="trash-can-outline"
+                      size={22}
+                      onPress={() => removeFromCart(item.category, item.colorHex)}
+                      iconColor="#ef4444"
+                      style={styles.iconBtn}
+                    />
+                  </View>
+                </View>
+              ))}
+            </View>
+          </Surface>
+        ))
+      )}
 
-        {Object.keys(groupedItems).length > 0 && (
-          <Button
-            mode="contained"
-            onPress={handlePlaceOrder}
-            style={styles.placeOrderButton}
-            labelStyle={styles.placeOrderButtonText}
-            loading={placingOrder}
-            disabled={placingOrder || refreshing}
-            icon="cart-check"
-          >
-            Place Order
-          </Button>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+      {Object.keys(groupedItems).length > 0 && (
+        <Button
+          mode="contained"
+          onPress={handlePlaceOrder}
+          style={styles.placeOrderButton}
+          labelStyle={styles.placeOrderButtonText}
+          loading={placingOrder}
+          disabled={placingOrder || refreshing}
+          icon="cart-check"
+        >
+          Place Order
+        </Button>
+      )}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: '#f9fbff',
   },
-  container: {
-    padding: 16,
+  headerGradient: {
+    paddingTop: 28,
+    paddingBottom: 18,
+    paddingHorizontal: 12,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    elevation: 5,
+    shadowColor: "#8b5cf6",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    marginBottom: 12,
+    alignItems: "center"
   },
   mainTitle: {
-    fontWeight: '700',
-    color: '#1a237e',
-    textAlign: 'center',
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 23,
+    textAlign: "center",
+    letterSpacing: 1,
+  },
+  subTitle: {
+    color: "#ebe9ff",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 7,
+    letterSpacing: 0.2,
   },
   loaderContainer: {
     flex: 1,
@@ -187,13 +218,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f9fbff',
   },
+  loadingText: {
+    marginTop: 10,
+    color: "#6366f1",
+    fontSize: 15,
+    textAlign: "center"
+  },
   emptyCard: {
-    padding: 20,
-    borderRadius: 12,
+    paddingVertical: 38,
+    paddingHorizontal: 18,
+    borderRadius: 18,
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    marginTop: 20,
-    elevation: 2,
+    backgroundColor: '#fff',
+    marginTop: 36,
+    elevation: 3,
+    shadowColor: "#6366f1",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
+  },
+  emptyIcon: {
+    marginBottom: 12,
+    backgroundColor: "#e0e7ff",
   },
   noItemsText: {
     textAlign: 'center',
@@ -202,61 +248,124 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     borderRadius: 18,
-    marginBottom: 20,
-    backgroundColor: '#ffffff',
+    marginHorizontal: 14,
+    marginBottom: 18,
+    backgroundColor: '#fff',
+    flexDirection: "column",
     overflow: 'hidden',
     elevation: 3,
+    shadowColor: "#6366f1",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.075,
+    shadowRadius: 7,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 6,
+    backgroundColor: "#faf7ff"
   },
   categoryTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#263238',
-    marginLeft: 8, 
-    paddingTop: 8,
+    color: '#32385a',
+  },
+  chip: {
+    backgroundColor: "#e0e7ff",
+    alignSelf: "flex-end"
+  },
+  chipText: {
+    color: "#4338ca",
+    fontWeight: "600"
   },
   divider: {
     backgroundColor: '#e0e0e0',
+    marginHorizontal: 14,
+    marginVertical: 7,
+  },
+  itemsContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 7,
+  },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    marginBottom: 9,
+    elevation: 2,
+    shadowColor: "#e0e7ff",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 10,
+  },
+  colorSwatch: {
+    width: 38,
+    height: 38,
+    borderRadius: 11,
+    marginRight: 10,
+    alignSelf: 'center',
+    borderWidth: 1.5,
+    borderColor: '#dee1e8',
+    shadowColor: "#ebe9ff",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.19,
+    shadowRadius: 5,
+  },
+  itemInfo: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems:'center',
+    gap: 2,
   },
   itemTitle: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#37474f', // Slightly darker grey
+    color: '#28294d',
   },
   itemDescription: {
     fontSize: 13,
     color: '#78909c',
   },
-  colorSwatch: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    marginRight: 15,
-    alignSelf: 'center',
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
   itemActions: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 2
+  },
+  iconBtn: {
+    marginHorizontal: 2,
+    marginVertical: -6,
+    backgroundColor: "transparent"
   },
   quantityText: {
-    marginHorizontal: 8,
-    fontSize: 24,
-    fontWeight: '500',
-    minWidth: 20,
+    marginHorizontal: 7,
+    fontSize: 19,
+    fontWeight: '700',
+    minWidth: 22,
+    color: "#6366f1",
     textAlign: 'center',
   },
   placeOrderButton: {
-    marginTop: 25,
-    paddingVertical: 8,
-    backgroundColor: '#43a047', // Green
-    borderRadius: 12,
-    elevation: 4,
+    marginTop: 24,
+    marginHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: "#10b981",
+    borderRadius: 16,
+    elevation: 5,
+    shadowColor: "#10b981",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
   },
   placeOrderButtonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color:'#000',
+    fontWeight: '700',
+    color: "#fff",
+    letterSpacing: 0.3,
   },
 });
 
