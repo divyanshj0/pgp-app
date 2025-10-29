@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import { Avatar, Card, Divider, List, Text } from "react-native-paper";
@@ -84,8 +85,8 @@ const OrderHistory = () => {
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token) {
-        Alert.alert("Error", "Authentication token not found.");
-        setLoading(false);
+        Alert.alert('Session Expired. Login again!');
+        router.replace('../../login');
         return;
       }
 

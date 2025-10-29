@@ -1,11 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Divider, IconButton, List, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from '../../../context/CartContext';
-
 const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
 const Cart = () => {
@@ -28,8 +28,8 @@ const Cart = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert('Authentication Error', 'You must be logged in to place an order.');
-        setPlacingOrder(false);
+        Alert.alert('Session Expired login Again!');
+        router.replace('../../login');
         return;
       }
 

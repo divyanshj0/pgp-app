@@ -23,7 +23,7 @@ const UsersScreen = () => {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
                 Alert.alert('Error', 'Authentication token not found.');
-                router.replace('/');
+                router.replace('../../login');
                 return;
             }
             const headers = { Authorization: `Bearer ${token}` };

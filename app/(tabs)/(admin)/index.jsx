@@ -24,7 +24,7 @@ const AdminDashboard = () => {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
                 Alert.alert('Error', 'Authentication token not found.');
-                router.replace('/');
+                router.replace('../../login');
                 return;
             }
             const headers = { Authorization: `Bearer ${token}` };
@@ -76,7 +76,7 @@ const AdminDashboard = () => {
         fetchData();
     }, []);
 
-    const handleMarkAsDelivered = async (orderId, billno) => {
+    const handleMarkAsDelivered = async (billno) => {
         Alert.alert(
             "Confirm Delivery",
             `Mark order Bill No. ${billno} as delivered?`,
@@ -86,11 +86,11 @@ const AdminDashboard = () => {
                     text: "Confirm", onPress: async () => {
                         try {
                             const token = await AsyncStorage.getItem('token');
-                            await axios.put(`${API_URL}/orders/${orderId}/deliver`, {}, {
+                            await axios.put(`${API_URL}/orders/${billno}/deliver`, {}, {
                                 headers: { Authorization: `Bearer ${token}` },
                             });
                             Alert.alert('Success', `Order ${billno} marked as delivered.`);
-                            setUndeliveredOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+                            setUndeliveredOrders(prevOrders => prevOrders.filter(order => order.billno !== billno));
                         } catch (error) {
                             console.error("Mark Delivered Error:", error.response ? error.response.data : error.message);
                             Alert.alert('Error', `Failed to mark order ${billno} as delivered.`);
@@ -320,7 +320,7 @@ const OrderItemCard = ({ order, onMarkDelivered, index }) => {
                     <Button
                         icon="check-circle"
                         mode="contained"
-                        onPress={() => onMarkDelivered(order._id, order.billno)}
+                        onPress={() => onMarkDelivered(order.billno)}
                         style={styles.deliverButton}
                         labelStyle={styles.deliverButtonLabel}
                         buttonColor="#10b981"
@@ -539,11 +539,11 @@ const styles = StyleSheet.create({
     },
     quantityChip: {
         backgroundColor: '#e0e7ff',
-        height: 28,
+        height: 36,
     },
     quantityText: {
         color: '#4338ca',
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: '600',
     },
     deliverButton: {

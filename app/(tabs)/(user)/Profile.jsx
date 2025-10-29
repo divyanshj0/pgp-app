@@ -9,6 +9,7 @@ import { Button, IconButton, Surface, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from '../../../context/CartContext';
 
+
 const API_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api`;
 
 const Profile = () => {
@@ -27,8 +28,7 @@ const Profile = () => {
         try {
             const token = await AsyncStorage.getItem('token');
             if (!token) {
-                Alert.alert('Error', 'Authentication token not found.');
-                setLoading(false);
+                Alert.alert('Session Expired. Login again!');
                 router.replace('../../login');
                 return;
             }
